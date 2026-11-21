@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="دومينو المجلس" />
-  <title>دومينو المجلس | Domino Majlis</title>
+  <meta name="apple-mobile-web-app-title" content="دومنا النني" />
+  <title>دومنا النني | Domino El-Neny</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -80,7 +80,6 @@
       -webkit-user-select: text;
     }
 
-    /* Subtle internal scrollbars (for hand tray & tall sheets only) */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -134,14 +133,14 @@
     }
 
     @keyframes tileDropIn {
-      0% { transform: scale(1.4) translateY(-14px); opacity: 0; }
-      65% { transform: scale(0.96) translateY(2px); opacity: 1; }
+      0% { transform: scale(1.32) translateY(-10px); opacity: 0; }
+      65% { transform: scale(0.97) translateY(1px); opacity: 1; }
       100% { transform: scale(1) translateY(0); opacity: 1; }
     }
 
     @keyframes impactRipple {
-      0% { transform: scale(0.88); opacity: 0.95; }
-      100% { transform: scale(1.85); opacity: 0; }
+      0% { transform: scale(0.92); opacity: 0.95; }
+      100% { transform: scale(1.65); opacity: 0; }
     }
 
     @keyframes turnHalo {
@@ -181,7 +180,7 @@
     .anim-spotlight { animation: ambientSpotlight 8s ease-in-out infinite; }
     .anim-float-a { animation: floatTileA 18s ease-in-out infinite; }
     .anim-float-b { animation: floatTileB 22s ease-in-out infinite; }
-    .anim-tile-drop { animation: tileDropIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-tile-drop { animation: tileDropIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both; }
     .anim-turn-halo { animation: turnHalo 2s ease-in-out infinite; }
     .anim-end-pulse { animation: endPulse 1.3s ease-in-out infinite; }
     .anim-sheet { animation: sheetSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
@@ -225,7 +224,6 @@
       pointer-events: none;
     }
 
-    /* Animated Segmented Mode Switcher Pill */
     .segmented-track {
       position: relative;
       background-color: #0B2A22;
@@ -253,8 +251,8 @@
     .domino-tile {
       position: relative;
       background: linear-gradient(165deg, #FAF6EE 0%, #F5F0E5 60%, #EAE1CE 100%);
-      border: 1px solid #DDD4C1;
-      border-radius: 11px;
+      border: 1px solid #C9BEA7;
+      border-radius: 10px;
       box-shadow:
         0 4px 10px rgba(0, 0, 0, 0.4),
         inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
@@ -265,6 +263,16 @@
       justify-content: space-between;
       padding: 4px;
       flex-shrink: 0;
+    }
+
+    /* Snug flush-edge board tiles for zero-gap connected snake chain */
+    .domino-tile.board-tile {
+      border-radius: 6px;
+      padding: 2px;
+      box-shadow:
+        0 3px 7px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -2px 0 rgba(148, 134, 107, 0.5);
     }
 
     .domino-tile.playable {
@@ -298,7 +306,7 @@
     .domino-impact-ring {
       position: absolute;
       inset: 0;
-      border-radius: 11px;
+      border-radius: 7px;
       border: 2px solid #D6B56D;
       animation: impactRipple 0.65s ease-out forwards;
       pointer-events: none;
@@ -346,8 +354,8 @@
     </div>
 
     <div class="anim-fade-up text-center z-10">
-      <h1 id="splash-title" class="text-3xl font-black text-white tracking-tight">دومينو المجلس</h1>
-      <p id="splash-sub" class="text-xs font-bold text-[#D6B56D] mt-1">طاولة رقمية متعددة الأجهزة</p>
+      <h1 id="splash-title" class="text-3xl font-black text-white tracking-tight">دومنا النني</h1>
+      <p id="splash-sub" class="text-xs font-bold text-[#D6B56D] mt-1">ترابيزة دومنا لايف بين صحابك</p>
     </div>
   </div>
 
@@ -362,7 +370,6 @@
     <div class="anim-spotlight absolute -top-24 left-1/2 w-[500px] h-[320px] rounded-full"
          style="background: radial-gradient(circle, rgba(214,181,109,0.22) 0%, rgba(15,53,43,0) 70%);"></div>
 
-    <!-- Gently Floating Translucent Domino Silhouettes -->
     <div id="ambient-silhouettes">
       <div class="anim-float-a absolute left-[6%] top-[16%] w-12 h-22 rounded-xl border border-[#D6B56D]/15 bg-[#1A5142]/15 flex flex-col items-center justify-between p-2 opacity-50">
         <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30 mt-1.5"></div>
@@ -400,8 +407,7 @@
   </div>
 
   <!-- ========================================================================
-       FIXED COMPACT APP TOP BAR (h-14, FROSTED EMERALD GLASS)
-       All global controls live strictly here (No bottom dock / no floating banner)
+       FIXED COMPACT APP TOP BAR
        ======================================================================== -->
   <header id="app-topbar"
           style="background: rgba(15, 53, 43, 0.88); padding-top: env(safe-area-inset-top);"
@@ -433,159 +439,160 @@
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwbXFkamNtYWptY2NpZGVydm16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNzcyMzcsImV4cCI6MjExMDg1MzIzN30.ylbo6QsStGtBhhzFUCpkW5cAWj1pKzxvYdmOkYckCR8';
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const STORAGE_SESSION = 'domino_majlis_session_v2';
-      const STORAGE_PREFS = 'domino_majlis_prefs_v2';
+      const STORAGE_SESSION = 'domino_elneny_session_v2';
+      const STORAGE_PREFS = 'domino_elneny_prefs_v2';
 
       // ======================================================================
-      // 2. BILINGUAL DICTIONARY (ARABIC RTL DEFAULT & ENGLISH LTR)
+      // 2. BILINGUAL DICTIONARY (EGYPTIAN COLLOQUIAL ARABIC DEFAULT & ENGLISH)
       // ======================================================================
       const DICT = {
         ar: {
-          brand: 'دومينو المجلس',
+          brand: 'دومنا النني',
           langPill: 'English',
-          live: 'مباشر',
-          eyebrow: 'طاولة رقمية متعددة الأجهزة',
-          heroTitle: 'طاولة دومينو حقيقية بين أيديكم',
-          heroSub: 'ضع التابلت في المنتصف ليكون طاولة اللعب العامة، بينما يتحكم كل لاعب بقطعه سرياً من هاتفه الخاص.',
-          tabTable: 'الطاولة',
+          live: 'شغال لايف',
+          eyebrow: 'ترابيزة دومنا لايف بين صحابك',
+          heroTitle: 'ترابيزة دومنا بجد في إيديكم',
+          heroSub: 'حط التابلت في النص يبقى الترابيزة، وكل واحد يلعب ورقه في السر من موبايله.',
+          tabTable: 'الترابيزة',
           tabPlayer: 'اللاعب',
-          resumeChip: 'العودة للغرفة السابقة',
-          tableLabel: 'شاشة التابلت المشتركة',
-          tableTitle: 'الطاولة',
-          tableDesc: 'أنشئ غرفة جديدة وأعرض الطاولة العامة مع رمز الغرفة ورمز QR.',
-          privacyRow: 'خصوصية تامة: لا تظهر قطع أي لاعب على شاشة الطاولة أبداً.',
-          createTableBtn: 'إنشاء طاولة جديدة',
-          settingsBtn: 'الإعدادات',
-          playerLabel: 'شاشة الهاتف الخاصة',
+          resumeChip: 'ارجع للأوضة اللي فاتت',
+          tableLabel: 'شاشة التابلت في النص',
+          tableTitle: 'الترابيزة',
+          tableDesc: 'اعمل أوضة جديدة وافتح الترابيزة بكود الأوضة والـ QR عشان صحابك يدخلوا.',
+          privacyRow: 'خصوصية 100%: ورق أي لاعب عمره ما يبان على الترابيزة أبداً.',
+          createTableBtn: 'اعمل ترابيزة جديدة',
+          settingsBtn: 'الظبط والإعدادات',
+          playerLabel: 'شاشة موبايلك الخاصة',
           playerTitle: 'اللاعب',
-          playerDesc: 'انضم إلى غرفة قائمة باستخدام الرمز وتحكم بقطعك سرياً من هاتفك.',
-          codePlaceholder: 'رمز الغرفة (6 أحرف)',
-          namePlaceholder: 'اسم اللاعب (مثال: عمر)',
-          joinBtn: 'انضمام إلى الغرفة',
-          createTitle: 'إعداد طاولة جديدة',
-          createSub: 'اختر عدد اللاعبين ونقاط الفوز لإنشاء غرفة مباشرة.',
-          playerCount: 'عدد اللاعبين',
-          p2: 'لاعبان',
-          p2Sub: '14 للسحب',
-          p3: '3 لاعبين',
-          p3Sub: '7 للسحب',
-          p4: '4 لاعبين',
-          p4Sub: 'فريقان 2v2',
-          targetScore: 'هدف النقاط',
-          tieRule: 'قاعدة التعادل عند الإغلاق',
-          tieNoPoints: 'لا تُمنح نقاط',
-          tieSplit: 'تقسيم النقاط',
-          tieBlockerLoses: 'يخسر المغلق',
-          createSubmit: 'إنشاء الغرفة وفتح الطاولة',
-          creating: 'جاري الإنشاء...',
-          joinTitle: 'الانضمام إلى الغرفة',
-          joinSub: 'أدخل رمز الغرفة المكون من 6 أحرف الظاهر على التابلت.',
-          joining: 'جاري الانضمام...',
-          waitingTitle: 'غرفة الانتظار',
-          roomCode: 'رمز الغرفة',
-          scanHint: 'امسح رمز QR من هاتف كل لاعب للانضمام فوراً',
-          copyCode: 'نسخ الرمز',
-          copyLink: 'نسخ الرابط',
-          copied: 'تم النسخ!',
-          playersJoined: 'اللاعبون المتصلون',
-          addBot: 'إضافة بوت AI',
-          addTestHuman: 'إضافة لاعب محلي',
-          startMatch: 'بدء المباراة',
-          waitingMore: 'بانتظار اكتمال اللاعبين...',
-          waitingHostStart: 'بانتظار بدء المباراة من شاشة الطاولة...',
-          toggleReady: 'تبديل الجاهزية',
+          playerDesc: 'ادخل الأوضة بالكود والعب ورقك في السر من موبايلك.',
+          codePlaceholder: 'كود الأوضة (6 حروف)',
+          namePlaceholder: 'اسمك إيه؟ (مثلاً: عمر)',
+          joinBtn: 'ادخل الأوضة',
+          createTitle: 'ظبّط الترابيزة الجديدة',
+          createSub: 'اختار عدد اللاعيبة والنقط اللي بتكسب عشان نبدأ اللعب.',
+          playerCount: 'كام لاعب؟',
+          p2: 'اتنين',
+          p2Sub: '14 ورقة بره',
+          p3: 'تلاتة',
+          p3Sub: '7 ورقات بره',
+          p4: 'أربعة',
+          p4Sub: 'فريقين 2 ضد 2',
+          targetScore: 'اللعبة على كام نقطة؟',
+          tieRule: 'لو اللعبة قفلت واتعادلنا',
+          tieNoPoints: 'مفيش نقط لحد',
+          tieSplit: 'النقط تتقسم',
+          tieBlockerLoses: 'اللي قفلها يخسر',
+          createSubmit: 'اعمل الأوضة وافتح الترابيزة',
+          creating: 'بنعمل الأوضة...',
+          joinTitle: 'ادخل الأوضة',
+          joinSub: 'اكتب كود الأوضة اللي ظاهر على التابلت.',
+          joining: 'بندخّلك الأوضة...',
+          waitingTitle: 'أوضة الانتظار',
+          roomCode: 'كود الأوضة',
+          scanHint: 'صوّر الـ QR من موبايل كل لاعب عشان يدخل علطول',
+          copyCode: 'انسخ الكود',
+          copyLink: 'انسخ اللينك',
+          copied: 'اتنسخ يا معلم!',
+          playersJoined: 'اللاعيبة اللي دخلوا',
+          addBot: 'زوّد بوت',
+          addTestHuman: 'زوّد لاعب تجريبي',
+          startMatch: 'يلا نبدأ اللعب',
+          waitingMore: 'مستنيين بقية الصحاب...',
+          waitingHostStart: 'مستنيين صاحب الترابيزة يبدأ الجيم...',
+          toggleReady: 'جاهز / مش جاهز',
           ready: 'جاهز',
-          notReady: 'غير جاهز',
+          notReady: 'لسه',
           bot: 'بوت',
-          teamA: 'الفريق أ',
-          teamB: 'الفريق ب',
-          round: 'الجولة',
-          target: 'الهدف',
+          teamA: 'فريق أ',
+          teamB: 'فريق ب',
+          round: 'الدور',
+          target: 'على',
           pts: 'نقطة',
           pips: 'نقطة',
           drawPile: 'السحب',
-          tilesLeft: 'قطعة',
+          tilesLeft: 'ورقة',
           turnOf: 'دور',
-          yourTurn: 'دورك الآن!',
-          waitingTurn: 'بانتظار دور',
-          offlineWarn: 'لاعب منقطع',
-          botThinking: 'البوت يفكر...',
-          botStep: 'نقلة بوت',
-          emptyBoard: 'الطاولة فارغة — بانتظار أول قطعة دومينو',
-          emptyOpenAny: 'الطاولة فارغة — اختر أي قطعة للبدء',
-          leftEnd: 'اليسار',
+          yourTurn: 'دورك يا بطل!',
+          waitingTurn: 'مستنيين دور',
+          offlineWarn: 'في لاعب فصَل',
+          botThinking: 'البوت بيفكر...',
+          botStep: 'خلّي البوت يلعب',
+          emptyBoard: 'الترابيزة فاضية — مستنيين أول ورقة تنزل',
+          emptyOpenAny: 'الترابيزة فاضية — اختار أي ورقة وافتح اللعب',
+          leftEnd: 'الشمال',
           rightEnd: 'اليمين',
-          chooseEnd: 'اختر الطرف:',
-          playTile: 'لعب القطعة',
-          drawTile: 'سحب قطعة',
-          passTurn: 'تمرير الدور',
-          privateHand: 'قطعك السرية',
-          onBoard: 'على الطاولة',
-          hintSelect: 'اضغط على قطعة مضيئة بالذهبي للعبها.',
-          hintPickEnd: 'اختر طرف اليسار أو اليمين ثم اضغط لعب القطعة.',
-          hintPressPlay: 'اضغط "لعب القطعة" لوضعها على الطاولة.',
-          hintDraw2: 'لا توجد نقلة — اسحب حتى تحصل على قطعة مناسبة.',
-          hintDraw3: 'لا توجد نقلة — اسحب قطعة واحدة فقط.',
-          hintPass: 'لا توجد نقلة متاحة — مرّر الدور.',
+          chooseEnd: 'هتنزلها فين؟',
+          playTile: 'نزّل الورقة',
+          drawTile: 'اسحب ورقة',
+          passTurn: 'باص (عدّي الدور)',
+          privateHand: 'ورقك في إيدك',
+          onBoard: 'على الترابيزة',
+          hintSelect: 'دوس على ورقة منوّرة بالدهبي عشان تنزلها.',
+          hintPickEnd: 'اختار الجنب الشمال ولا اليمين وبعدين دوس نزّل الورقة.',
+          hintPressPlay: 'دوس "نزّل الورقة" عشان تحطها على الترابيزة.',
+          hintDraw2: 'معكش ورق ينفع — اسحب لحد ما تلاقي ورقة تنزل.',
+          hintDraw3: 'معكش ورق ينفع — اسحب ورقة واحدة بس.',
+          hintPass: 'معكش ورق ينزل — اعمل باص وعدّي الدور.',
           online: 'متصل',
-          offline: 'منقطع',
-          score: 'النقاط',
+          offline: 'فاصل',
+          score: 'نقطك',
           settingsTitle: 'الإعدادات',
-          soundLabel: 'المؤثرات الصوتية',
-          hapticsLabel: 'الاهتزاز اللمسي',
-          autoBotLabel: 'لعب تلقائي للبوتات',
+          soundLabel: 'صوت الورق واللعبة',
+          hapticsLabel: 'الهزاز',
+          autoBotLabel: 'البوت يلعب لوحده',
           langLabel: 'اللغة',
-          hostRulesTitle: 'قواعد الغرفة (المضيف)',
-          saveClose: 'حفظ وإغلاق',
-          roundResults: 'نتائج الجولة',
-          reasonDomino: 'دومينو! أنهى جميع قطعه',
-          reasonBlocked: 'إغلاق اللعبة — أقل مجموع نقاط',
-          roundWinner: 'الفائز بالجولة',
-          roundTie: 'تعادل في الإغلاق!',
-          revealedHands: 'القطع المتبقية بنهاية الجولة',
-          scoreboard: 'لوحة النقاط',
-          nextRound: 'الجولة التالية',
-          waitingHostNext: 'بانتظار شاشة الطاولة لبدء الجولة التالية...',
-          matchChampion: 'بطل المباراة!',
+          hostRulesTitle: 'قوانين الأوضة (صاحب الترابيزة)',
+          saveClose: 'احفظ واقفل',
+          roundResults: 'نتيجة الدور',
+          reasonDomino: 'دومنا! خلّص كل ورقه',
+          reasonBlocked: 'اللعبة قفلت! اللي معاه أقل نقط هو اللي كسب',
+          roundWinner: 'اللي كسب الدور',
+          roundTie: 'اللعبة قفلت واتعادلتوا!',
+          revealedHands: 'الورق اللي فاضل في إيد اللاعيبة',
+          scoreboard: 'الحساب والنقط',
+          nextRound: 'ابدأ الدور الجاي',
+          waitingHostNext: 'مستنيين الترابيزة تبدأ الدور الجاي...',
+          matchChampion: 'بطل القعدة!',
           finalStandings: 'الترتيب النهائي',
-          roundsPlayed: 'الجولات الملعوبة',
-          rematch: 'مباراة جديدة',
+          roundsPlayed: 'عدد الأدوار',
+          rematch: 'نلعب ماتش تاني',
           returnHome: 'الرئيسية',
-          waitingHostRematch: 'بانتظار الطاولة لبدء مباراة جديدة.',
-          connLost: 'انقطع الاتصال',
-          connLostDesc: 'فقد الاتصال المباشر بطاولة الدومينو. حالتك وقطعك محفوظة بأمان على السحابة.',
-          reconnectBtn: 'إعادة الاتصال الآن',
-          reconnecting: 'جاري إعادة الاتصال...',
-          simTitle: 'محاكي الأجهزة المتعددة',
-          simDesc: 'اختبر الطاولة وهواتف اللاعبين من نفس المتصفح مباشرة على Supabase.',
-          simNoRoom: 'أنشئ غرفة أو انضم لغرفة أولاً لاستخدام المحاكي.',
-          simTablet: 'شاشة التابلت المشتركة',
-          simPhones: 'هواتف اللاعبين المحليين',
-          simTools: 'أدوات المحاكاة',
-          simDisconnect: 'محاكاة انقطاع',
-          simReconnect: 'استعادة الاتصال',
-          simLeave: 'مغادرة الغرفة',
-          confirmHomeTitle: 'العودة إلى الرئيسية؟',
-          confirmHomeDesc: 'ستبقى الغرفة نشطة على السحابة ويمكنك العودة لها بنقرة واحدة.',
-          stay: 'البقاء',
-          goHome: 'الرئيسية',
+          waitingHostRematch: 'مستنيين الترابيزة تبدأ ماتش جديد.',
+          connLost: 'النت فصل!',
+          connLostDesc: 'الاتصال بالترابيزة قطع. ما تقلقش، ورقك ونقطك محفوظين ومفيش حاجة ضاعت.',
+          reconnectBtn: 'ارجع اتصل تاني',
+          reconnecting: 'بنرجع الاتصال...',
+          simTitle: 'تجربة كذا جهاز',
+          simDesc: 'جرّب شاشة الترابيزة وموبايلات اللاعيبة من نفس المتصفح لايف.',
+          simNoRoom: 'اعمل أوضة أو ادخل أوضة الأول عشان تجرّب.',
+          simTablet: 'شاشة الترابيزة',
+          simPhones: 'موبايلات اللاعيبة',
+          simTools: 'أدوات التجربة',
+          simDisconnect: 'جرّب تفصل النت',
+          simReconnect: 'رجّع النت',
+          simLeave: 'اطلع من الأوضة',
+          confirmHomeTitle: 'هترجع للرئيسية؟',
+          confirmHomeDesc: 'الأوضة هتفضل شغالة وممكن ترجعلها بضغطة واحدة.',
+          stay: 'خلّيك هنا',
+          goHome: 'ارجع الرئيسية',
           back: 'رجوع',
-          you: 'أنت',
-          actPlayed: 'لعب',
-          actDrew: 'سحب قطعة',
-          actPassed: 'مرّر الدور',
-          invalidTile: 'هذه القطعة لا تطابق أي طرف متاح',
-          settingsSaved: 'تم تحديث الإعدادات',
-          extPlayerLock: 'جهاز خارجي (قطع محمية بـ RLS)',
-          errNotFound: 'الغرفة غير موجودة. تحقق من الرمز.',
-          errFull: 'الغرفة ممتلئة بالفعل.',
-          errStarted: 'المباراة بدأت بالفعل في هذه الغرفة.',
-          errGeneral: 'تعذر الاتصال بالخادم، حاول مجدداً.',
-          autoPassedMsg: 'القطعة المسحوبة غير مناسبة — تم تمرير الدور تلقائياً',
+          you: 'إنت',
+          actPlayed: 'نزّل',
+          actDrew: 'سحب ورقة',
+          actPassed: 'عمل باص',
+          actWinnerStarts: 'كسب الدور اللي فات وهيبدأ الأول!',
+          invalidTile: 'الورقة دي مش هتنفع على أي جنب',
+          settingsSaved: 'تم حفظ الإعدادات',
+          extPlayerLock: 'جهاز تاني (ورقه محمي)',
+          errNotFound: 'الأوضة دي مش موجودة، اتأكد من الكود.',
+          errFull: 'الأوضة اتملت خلاص.',
+          errStarted: 'الجيم بدأ خلاص في الأوضة دي.',
+          errGeneral: 'حصلت مشكلة في الاتصال، جرّب تاني.',
+          autoPassedMsg: 'الورقة اللي سحبتها مش نافعة — الدور اتعدّى لوحده',
         },
         en: {
-          brand: 'Domino Majlis',
-          langPill: 'العربية',
+          brand: 'Domino El-Neny',
+          langPill: 'مصري',
           live: 'LIVE',
           eyebrow: 'Multi-Device Digital Tabletop',
           heroTitle: 'A Real Domino Table Right Between You',
@@ -682,7 +689,7 @@
           saveClose: 'Save & Close',
           roundResults: 'Round Results',
           reasonDomino: 'Domino! Hand Emptied',
-          reasonBlocked: 'Game Blocked — Lowest Pip Total',
+          reasonBlocked: 'Game Blocked — Lowest Pip Total Wins',
           roundWinner: 'Round Winner',
           roundTie: 'Blocked Round — Tie!',
           revealedHands: 'Remaining Tiles Reveal',
@@ -717,6 +724,7 @@
           actPlayed: 'played',
           actDrew: 'drew a tile',
           actPassed: 'passed',
+          actWinnerStarts: 'won last round and starts first!',
           invalidTile: 'Tile does not match any open end',
           settingsSaved: 'Settings updated',
           extPlayerLock: 'External device (RLS protected)',
@@ -729,12 +737,12 @@
       };
 
       const BOT_NAMES = {
-        ar: ['كريم', 'ليلى', 'طارق', 'نور'],
-        en: ['Karim', 'Layla', 'Tariq', 'Nour'],
+        ar: ['كريم', 'ميدو', 'طارق', 'زيكو'],
+        en: ['Karim', 'Mido', 'Tariq', 'Ziko'],
       };
       const TEST_HUMAN_NAMES = {
-        ar: ['عمر', 'سارة', 'يوسف', 'مريم'],
-        en: ['Omar', 'Sara', 'Youssef', 'Mariam'],
+        ar: ['عمر', 'أحمد', 'يوسف', 'مصطفى'],
+        en: ['Omar', 'Ahmed', 'Youssef', 'Mostafa'],
       };
 
       // ======================================================================
@@ -893,7 +901,6 @@
       // 4. STRICTLY SEPARATED STATE STORE (publicState / privateState / uiState)
       // ======================================================================
       const store = {
-        // PUBLIC STATE: Broadcasted to Tablet & Players (ZERO private tiles!)
         publicState: {
           room: null,
           players: [],
@@ -904,11 +911,10 @@
           elapsedSeconds: 0,
         },
 
-        // PRIVATE STATE: Strictly populated ONLY when uiState.role === 'PLAYER'
         privateState: {
           activePlayerId: null,
           tiles: [],
-          validMoves: {}, // { [tileId]: { canLeft, canRight } }
+          validMoves: {},
           isMyTurn: false,
           canDraw: false,
           canPass: false,
@@ -916,14 +922,13 @@
           selectedEnd: null,
         },
 
-        // LOCAL UI & SESSION STATE
         uiState: {
           lang: 'ar',
-          screen: 'LANDING', // LANDING | CREATE_ROOM | JOIN_ROOM | WAITING_ROOM | TABLE_BOARD | PLAYER_SCREEN | ROUND_RESULTS | MATCH_RESULTS
-          landingTab: 'TABLE', // 'TABLE' | 'PLAYER'
-          role: 'TABLE', // 'TABLE' | 'PLAYER'
+          screen: 'LANDING',
+          landingTab: 'TABLE',
+          role: 'TABLE',
           hostToken: null,
-          localPlayers: {}, // { [playerId]: { id, name, seatIndex, token, isBot } }
+          localPlayers: {},
           savedSession: null,
           createDraft: { maxPlayers: 4, targetScore: 101, tieRule: 'no_points' },
           joinDraft: { code: '', name: '', error: '' },
@@ -985,7 +990,7 @@
         const seatIndex = Number(p.seat_index ?? p.seatIndex ?? idx);
         return {
           id: p.id,
-          name: p.name || p.player_name || `Player ${seatIndex + 1}`,
+          name: p.name || p.player_name || `لاعب ${seatIndex + 1}`,
           seatIndex,
           team: p.team || null,
           tileCount: Number(p.tile_count ?? p.tiles_count ?? p.tileCount ?? 0),
@@ -1055,7 +1060,7 @@
       }
 
       // ======================================================================
-      // 6. MODULAR LIVE SUPABASE SERVICES (ALL 14 RPCs + REALTIME + FALLBACK)
+      // 6. MODULAR LIVE SUPABASE SERVICES
       // ======================================================================
       const roomService = {
         async createRoom(maxPlayers, targetScore, tieRule) {
@@ -1244,7 +1249,6 @@
               renderTopBar();
             });
 
-          // Lightweight 4s fallback poll ONLY when Realtime is NOT SUBSCRIBED
           this.fallbackInterval = setInterval(() => {
             if (
               store.publicState.room &&
@@ -1393,7 +1397,7 @@
             ? 'bg-[#D6B56D] text-[#0F352B] border-[#F5F0E5]/50'
             : 'bg-[#17463A] text-white border-[#D6B56D]/60';
         el.innerHTML = `<div class="anim-toast px-4 py-1.5 rounded-full text-xs font-extrabold shadow-xl border whitespace-nowrap ${style}">${esc(msg)}</div>`;
-        toastTimerId = setTimeout(() => { el.innerHTML = ''; }, 2400);
+        toastTimerId = setTimeout(() => { el.innerHTML = ''; }, 2600);
       }
 
       function friendlyError(err) {
@@ -1445,7 +1449,6 @@
         }
       }
 
-      // Responsive Golden Confetti Canvas for Match Results
       function startConfetti() {
         const canvas = document.getElementById('confetti-canvas');
         if (!canvas) return;
@@ -1584,7 +1587,10 @@
           if (act && stamp && prevStamp !== null && stamp !== prevStamp) {
             const kind = String(act.type || '').toLowerCase();
             const who = act.playerName || act.player_name || '';
-            if (kind.includes('play')) {
+            if (kind === 'round_started' && act.startedByWinner) {
+              const starter = players.find((p) => p.seatIndex === Number(act.seat));
+              if (starter) showToast(`${starter.name} ${t('actWinnerStarts')}`, 'gold');
+            } else if (kind.includes('play')) {
               audioEngine.clack();
               haptics.clack();
               const tileStr = act.tile ? `${act.tile.left ?? act.tile.a ?? ''}|${act.tile.right ?? act.tile.b ?? ''}` : '';
@@ -1639,11 +1645,9 @@
               wipePrivateState();
             }
           } else {
-            // TABLET MODE: Never fetch or retain private tiles
             wipePrivateState();
           }
 
-          // Subscribe to Realtime changes
           realtimeService.subscribe(room.id, () => {
             if (syncDebounceId) clearTimeout(syncDebounceId);
             syncDebounceId = setTimeout(() => syncLiveState({ navigate: true }), 90);
@@ -1667,7 +1671,7 @@
       }
 
       // ======================================================================
-      // 9. GRAPHICAL COMPONENTS (PIPS, 3D DOMINOES, QR CODE, SEATS, CHAIN)
+      // 9. GRAPHICAL COMPONENTS (PIPS, 3D DOMINOES, QR CODE, CONNECTED SNAKE)
       // ======================================================================
       const PIP_MAP = {
         0: [],
@@ -1681,12 +1685,25 @@
 
       function pipSvg(val) {
         const dots = (PIP_MAP[Number(val)] || [])
-          .map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="10.8" fill="#20231F" />`)
+          .map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="11" fill="#20231F" />`)
           .join('');
         return `<svg viewBox="0 0 100 100" class="w-full h-full block" aria-hidden="true">${dots}</svg>`;
       }
 
-      function dominoHtml({ id = '', left = 0, right = 0, orientation = 'horizontal', size = 'md', playable = false, selected = false, dimmed = false, isNew = false, interactive = false }) {
+      function dominoHtml({
+        id = '',
+        left = 0,
+        right = 0,
+        orientation = 'horizontal',
+        size = 'md',
+        exactPx = null,
+        boardStyle = false,
+        playable = false,
+        selected = false,
+        dimmed = false,
+        isNew = false,
+        interactive = false,
+      }) {
         const horiz = orientation === 'horizontal';
         const dimMap = {
           xs: horiz ? 'w-11 h-6' : 'w-6 h-11',
@@ -1695,26 +1712,28 @@
           lg: horiz ? 'w-24 h-12' : 'w-[58px] h-[112px]',
         };
         const divider = horiz
-          ? 'w-[1.5px] h-[72%] bg-[#20231F]/28 rounded-full shrink-0'
-          : 'h-[1.5px] w-[72%] bg-[#20231F]/28 rounded-full shrink-0';
+          ? 'w-[1.5px] h-[72%] bg-[#20231F]/30 rounded-full shrink-0'
+          : 'h-[1.5px] w-[72%] bg-[#20231F]/30 rounded-full shrink-0';
 
         const cls = [
           'domino-tile',
+          boardStyle ? 'board-tile' : '',
           horiz ? 'flex-row' : 'flex-col',
-          dimMap[size] || dimMap.md,
+          exactPx ? '' : (dimMap[size] || dimMap.md),
           playable ? 'playable' : '',
           selected ? 'selected' : '',
           dimmed ? 'dimmed' : '',
           isNew ? 'anim-tile-drop' : '',
         ].filter(Boolean).join(' ');
 
+        const inlineStyle = exactPx ? `style="width:${exactPx.w}px;height:${exactPx.h}px;"` : '';
         const tag = interactive ? 'button' : 'div';
         const attrs = interactive
           ? `type="button" data-action="select-tile" data-tile-id="${esc(id)}" aria-label="Domino ${left}-${right}"`
           : `aria-label="Domino ${left}-${right}"`;
 
         return `
-          <${tag} ${attrs} class="${cls}">
+          <${tag} ${attrs} ${inlineStyle} class="${cls}">
             ${isNew ? '<span class="domino-impact-ring"></span>' : ''}
             <div class="flex-1 w-full h-full flex items-center justify-center p-0.5">${pipSvg(left)}</div>
             <div class="${divider}"></div>
@@ -1723,9 +1742,6 @@
         `;
       }
 
-      /**
-       * Scannable QR Code using `qrcode-generator` CDN (with clean SVG styling)
-       */
       function renderQrCode(text, pxSize = 128) {
         try {
           if (typeof window.qrcode === 'function') {
@@ -1827,7 +1843,6 @@
               ${!is4P ? `<span class="text-[10px] text-[#B7C9C1] font-semibold">${player.score} ${t('pts')}</span>` : ''}
             </div>
 
-            <!-- Tile count only (STRICT PRIVACY: NEVER show player tile faces) -->
             <div class="flex items-center gap-1.5 bg-[#0C2B23] px-2 py-1 rounded-xl border border-[#235547] shrink-0">
               <div class="flex -space-x-0.5 rtl:space-x-reverse">${backs}</div>
               <span class="text-xs font-black text-white tabular-nums">${player.tileCount}</span>
@@ -1838,7 +1853,6 @@
 
       function renderDrawPile() {
         const room = store.publicState.room;
-        // STRICT RULE: Completely hidden in 4-player mode
         if (!room || room.maxPlayers === 4) return '';
         const count = room.drawPileCount;
         const stack = count === 0
@@ -1862,6 +1876,194 @@
         `;
       }
 
+      /**
+       * ZERO-GAP CONNECTED DOMINO SNAKE LAYOUT ENGINE
+       * Every tile sits physically flush against the previous tile (0px gap),
+       * including 90-degree vertical corner turns when reversing direction!
+       */
+      function computeConnectedSnakeLayout(board) {
+        const UNIT = 34; // 1 domino half = 34px x 34px, full tile = 68px x 34px
+        const ROW_MAX_X = window.innerWidth < 640 ? 9 : 13;
+        const ROW_MIN_X = 0;
+
+        const placed = [];
+        let dir = 'R'; // 'R' (left->right) or 'L' (right->left)
+        let cx = 0;    // Current horizontal attachment edge (in UNITs)
+        let cy = 0;    // Current row centerline Y (in UNITs)
+
+        const collidesEarlier = (rect, margin = 0.14) => {
+          // Ignore the immediately previous tile (which we intentionally touch!)
+          for (let k = 0; k < placed.length - 1; k++) {
+            const o = placed[k];
+            if (
+              rect.x < o.x + o.w + margin &&
+              rect.x + rect.w + margin > o.x &&
+              rect.y < o.y + o.h + margin &&
+              rect.y + rect.h + margin > o.y
+            ) {
+              return true;
+            }
+          }
+          return false;
+        };
+
+        for (let i = 0; i < board.length; i++) {
+          const tile = board[i];
+          const prev = placed.length > 0 ? placed[placed.length - 1] : null;
+          let item = null;
+
+          // Check if we reached the edge and must turn DOWN via a flush vertical corner tile
+          const needRightTurn = prev && dir === 'R' && cx >= ROW_MAX_X;
+          const needLeftTurn = prev && dir === 'L' && cx <= ROW_MIN_X;
+
+          if (needRightTurn) {
+            // Attach vertical tile directly under prev's rightmost half (100% flush)
+            const x = cx - 1;
+            const y = prev.y + prev.h;
+            item = {
+              tile,
+              x,
+              y,
+              w: 1,
+              h: 2,
+              orientation: 'vertical',
+              dispA: tile.left,  // Top half touches prev's exposed half
+              dispB: tile.right, // Bottom half exposes to the left row
+            };
+            dir = 'L';
+            cx = x;       // Next leftward tile attaches flush to left edge of bottom half
+            cy = y + 1.5; // Centerline of the bottom half
+          } else if (needLeftTurn) {
+            // Attach vertical tile directly under prev's leftmost half (100% flush)
+            const x = cx;
+            const y = prev.y + prev.h;
+            item = {
+              tile,
+              x,
+              y,
+              w: 1,
+              h: 2,
+              orientation: 'vertical',
+              dispA: tile.left,  // Top half touches prev's exposed half
+              dispB: tile.right, // Bottom half exposes to the right row
+            };
+            dir = 'R';
+            cx = x + 1;   // Next rightward tile attaches flush to right edge of bottom half
+            cy = y + 1.5; // Centerline of the bottom half
+          } else if (dir === 'R') {
+            let usePerpDouble = tile.isDouble;
+            if (usePerpDouble) {
+              const cand = { x: cx, y: cy - 1, w: 1, h: 2 };
+              if (collidesEarlier(cand)) usePerpDouble = false;
+            }
+
+            if (usePerpDouble) {
+              item = {
+                tile,
+                x: cx,
+                y: cy - 1,
+                w: 1,
+                h: 2,
+                orientation: 'vertical',
+                dispA: tile.left,
+                dispB: tile.right,
+              };
+              cx += 1;
+            } else {
+              item = {
+                tile,
+                x: cx,
+                y: cy - 0.5,
+                w: 2,
+                h: 1,
+                orientation: 'horizontal',
+                dispA: tile.left,  // Left half touches prev
+                dispB: tile.right, // Right half exposed
+              };
+              cx += 2;
+            }
+          } else {
+            // dir === 'L'
+            let usePerpDouble = tile.isDouble;
+            if (usePerpDouble) {
+              const cand = { x: cx - 1, y: cy - 1, w: 1, h: 2 };
+              if (collidesEarlier(cand)) usePerpDouble = false;
+            }
+
+            if (usePerpDouble) {
+              item = {
+                tile,
+                x: cx - 1,
+                y: cy - 1,
+                w: 1,
+                h: 2,
+                orientation: 'vertical',
+                dispA: tile.left,
+                dispB: tile.right,
+              };
+              cx -= 1;
+            } else {
+              item = {
+                tile,
+                x: cx - 2,
+                y: cy - 0.5,
+                w: 2,
+                h: 1,
+                orientation: 'horizontal',
+                dispA: tile.right, // Left half exposed going left
+                dispB: tile.left,  // Right half touches prev
+              };
+              cx -= 2;
+            }
+          }
+
+          placed.push(item);
+        }
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        placed.forEach((p) => {
+          if (p.x < minX) minX = p.x;
+          if (p.y < minY) minY = p.y;
+          if (p.x + p.w > maxX) maxX = p.x + p.w;
+          if (p.y + p.h > maxY) maxY = p.y + p.h;
+        });
+
+        const widthPx = Math.max(1, (maxX - minX) * UNIT);
+        const heightPx = Math.max(1, (maxY - minY) * UNIT);
+
+        return {
+          unit: UNIT,
+          minX,
+          minY,
+          widthPx,
+          heightPx,
+          items: placed.map((p) => ({
+            ...p,
+            leftPx: (p.x - minX) * UNIT,
+            topPx: (p.y - minY) * UNIT,
+            wPx: p.w * UNIT,
+            hPx: p.h * UNIT,
+          })),
+        };
+      }
+
+      function fitBoardSnake() {
+        const vp = document.getElementById('board-viewport');
+        const box = document.getElementById('board-snake-box');
+        const stage = document.getElementById('board-snake-stage');
+        if (!vp || !box || !stage) return;
+
+        const baseW = Number(stage.dataset.w || 1);
+        const baseH = Number(stage.dataset.h || 1);
+        const availW = Math.max(80, vp.clientWidth - 16);
+        const availH = Math.max(80, vp.clientHeight - 16);
+        const scale = Math.min(1.22, availW / baseW, availH / baseH);
+
+        box.style.width = `${Math.round(baseW * scale)}px`;
+        box.style.height = `${Math.round(baseH * scale)}px`;
+        stage.style.transform = `scale(${scale})`;
+      }
+
       function renderBoardChain() {
         const room = store.publicState.room;
         const board = room?.board || [];
@@ -1876,32 +2078,27 @@
           `;
         }
 
-        const perRow = window.innerWidth < 640 ? 5 : 7;
-        const rows = [];
-        for (let i = 0; i < board.length; i += perRow) {
-          rows.push(board.slice(i, i + perRow));
-        }
-
-        const size = board.length > 14 ? 'sm' : 'md';
-        const rowsHtml = rows.map((rowTiles, rIdx) => {
-          const rev = rIdx % 2 === 1;
-          const ordered = rev ? [...rowTiles].reverse() : rowTiles;
-          const tilesHtml = ordered.map((tile) =>
-            dominoHtml({
-              id: tile.id,
-              left: rev ? tile.right : tile.left,
-              right: rev ? tile.left : tile.right,
-              orientation: tile.isDouble ? 'vertical' : 'horizontal',
-              size,
-              isNew: tile.id === store.publicState.lastPlacedTileId,
-            })
-          ).join('');
-          return `<div class="flex items-center justify-center flex-wrap gap-1">${tilesHtml}</div>`;
+        const layout = computeConnectedSnakeLayout(board);
+        const tilesHtml = layout.items.map((item, idx) => {
+          const isNew = item.tile.id === store.publicState.lastPlacedTileId;
+          return `
+            <div style="position:absolute; left:${item.leftPx}px; top:${item.topPx}px; width:${item.wPx}px; height:${item.hPx}px; z-index:${isNew ? 30 : idx + 1};">
+              ${dominoHtml({
+                id: item.tile.id,
+                left: item.dispA,
+                right: item.dispB,
+                orientation: item.orientation,
+                exactPx: { w: item.wPx, h: item.hPx },
+                boardStyle: true,
+                isNew,
+              })}
+            </div>
+          `;
         }).join('');
 
         return `
-          <div dir="ltr" class="w-full h-full flex flex-col items-center justify-center gap-2.5 p-1.5 overflow-auto no-scrollbar">
-            <div class="flex items-center gap-2.5 bg-[#11392F]/95 border border-[#D6B56D]/50 rounded-full px-3.5 py-1 text-xs shadow-lg shrink-0">
+          <div dir="ltr" class="w-full h-full flex flex-col items-center justify-between gap-2 p-1 overflow-hidden">
+            <div class="flex items-center gap-2.5 bg-[#11392F]/95 border border-[#D6B56D]/50 rounded-full px-3.5 py-1 text-xs shadow-lg shrink-0 z-20">
               <span class="flex items-center gap-1 text-[#B7C9C1]">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
                 <strong class="text-white text-sm font-black tabular-nums">${room.leftEnd}</strong>
@@ -1914,13 +2111,21 @@
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
               </span>
             </div>
-            <div class="flex flex-col items-center justify-center gap-2 max-w-full">${rowsHtml}</div>
+
+            <div id="board-viewport" class="flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden">
+              <div id="board-snake-box" class="relative shrink-0" style="width:${layout.widthPx}px; height:${layout.heightPx}px;">
+                <div id="board-snake-stage" data-w="${layout.widthPx}" data-h="${layout.heightPx}"
+                     style="position:absolute; top:0; left:0; width:${layout.widthPx}px; height:${layout.heightPx}px; transform-origin: top left;">
+                  ${tilesHtml}
+                </div>
+              </div>
+            </div>
           </div>
         `;
       }
 
       // ======================================================================
-      // 10. TOP APP BAR & ALL 10 SCREENS + BOTTOM SHEETS
+      // 10. TOP APP BAR & ALL SCREENS + BOTTOM SHEETS
       // ======================================================================
       function renderTopBar() {
         const bar = document.getElementById('app-topbar');
@@ -1929,7 +2134,6 @@
         const liveOk = store.uiState.realtimeStatus === 'SUBSCRIBED' && !store.uiState.isDisconnected;
 
         bar.innerHTML = `
-          <!-- Start side (RTL Right): Ivory 3D domino logo + title + live dot -->
           <button type="button" data-action="brand-home" class="flex items-center gap-2.5 active:scale-95 transition-transform">
             <div class="w-7 h-7 rounded-lg bg-[#F5F0E5] shadow-[0_3px_8px_rgba(0,0,0,0.45),inset_0_-2px_0_rgba(160,145,115,0.45)] flex items-center justify-center border border-[#DDD5C4]">
               <div class="w-1.5 h-1.5 rounded-full bg-[#20231F]"></div>
@@ -1943,7 +2147,6 @@
             ` : ''}
           </button>
 
-          <!-- End side (RTL Left): Device Simulator, Settings Gear, Language Pill -->
           <div class="flex items-center gap-1.5">
             <button type="button" data-action="open-sim" title="${t('simTitle')}" aria-label="${t('simTitle')}"
               class="p-2 rounded-xl border transition-colors active:scale-95 ${
@@ -1968,7 +2171,7 @@
         `;
       }
 
-      // SCREEN 1: ONE-SCREEN NATIVE APP LANDING (ZERO PAGE SCROLL)
+      // SCREEN 1: LANDING
       function renderLandingScreen() {
         const dirArrow = store.uiState.lang === 'ar' ? 'arrow-left' : 'arrow-right';
         const tab = store.uiState.landingTab;
@@ -1980,14 +2183,12 @@
           <div class="anim-view h-full w-full px-4 py-3 sm:py-5 flex flex-col items-center justify-center overflow-hidden">
             <div class="w-full max-w-[440px] flex flex-col items-center gap-3 sm:gap-4">
 
-              <!-- Compact Hero Header (Matches Reference Screenshot) -->
               <div class="text-center flex flex-col items-center gap-1 sm:gap-1.5 px-1">
                 <span class="text-[11px] sm:text-xs font-bold tracking-wide text-[#D6B56D]">${t('eyebrow')}</span>
                 <h1 class="text-2xl sm:text-[32px] font-black leading-[1.2] text-white">${t('heroTitle')}</h1>
                 <p class="text-[11px] sm:text-xs text-[#B7C9C1] max-w-[350px] leading-relaxed">${t('heroSub')}</p>
               </div>
 
-              <!-- Optional Compact Resume Saved Room Chip -->
               ${resumeCode ? `
                 <button type="button" data-action="resume-saved"
                   class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#17463A]/95 hover:bg-[#1E584A] border border-[#D6B56D]/75 text-[11px] font-extrabold text-white shadow-md active:scale-95 transition-transform">
@@ -1998,7 +2199,6 @@
                 </button>
               ` : ''}
 
-              <!-- Native App Segmented Mode Switcher Pill (الطاولة | اللاعب) -->
               <div class="segmented-track w-full">
                 <div class="segmented-thumb" style="inset-inline-start: ${thumbStart};"></div>
                 <button type="button" data-action="set-landing-tab" data-tab="TABLE"
@@ -2017,12 +2217,10 @@
                 </button>
               </div>
 
-              <!-- Single Sleek Morphing App Card (Fits 100dvh with ZERO scroll) -->
               <div class="anim-card-morph w-full rounded-3xl bg-[#11392F]/95 border border-[#235547] p-5 sm:p-6 shadow-[0_16px_38px_rgba(0,0,0,0.34)] flex flex-col gap-4 relative overflow-hidden">
                 <div class="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[#D6B56D]/45 to-transparent"></div>
 
                 ${tab === 'TABLE' ? `
-                  <!-- TAB 1: TABLE MODE (EXACT REFERENCE MATCH) -->
                   <div class="flex flex-col gap-2.5 text-start">
                     <div class="w-11 h-11 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center shadow-inner">
                       <i data-lucide="layout-grid" class="w-5 h-5 text-[#D6B56D]"></i>
@@ -2052,7 +2250,6 @@
                     </button>
                   </div>
                 ` : `
-                  <!-- TAB 2: PLAYER MODE (INLINE JOIN FORM) -->
                   <div class="flex flex-col gap-2 text-start">
                     <div class="w-11 h-11 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center shadow-inner">
                       <i data-lucide="smartphone" class="w-5 h-5 text-[#D6B56D]"></i>
@@ -2119,7 +2316,6 @@
                 <p class="text-xs text-[#B7C9C1] mt-0.5">${t('createSub')}</p>
               </div>
 
-              <!-- Player Count -->
               <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-bold text-[#B7C9C1]">${t('playerCount')}</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -2140,7 +2336,6 @@
                 </div>
               </div>
 
-              <!-- Target Score -->
               <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-bold text-[#B7C9C1]">${t('targetScore')}</label>
                 <div class="grid grid-cols-4 gap-2">
@@ -2155,7 +2350,6 @@
                 </div>
               </div>
 
-              <!-- Tie Rule -->
               <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-bold text-[#B7C9C1]">${t('tieRule')}</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -2184,7 +2378,7 @@
         `;
       }
 
-      // SCREEN 3: DEDICATED JOIN ROOM (For ?join=CODE QR Scans)
+      // SCREEN 3: JOIN ROOM (QR Scan Deep Link)
       function renderJoinRoomScreen() {
         const backIcon = store.uiState.lang === 'ar' ? 'arrow-right' : 'arrow-left';
         const jd = store.uiState.joinDraft;
@@ -2291,7 +2485,6 @@
           <div class="anim-view h-full w-full px-3 sm:px-5 py-3 flex items-center justify-center overflow-hidden">
             <div class="w-full max-w-4xl max-h-full overflow-y-auto app-scroll rounded-3xl bg-[#11392F]/95 border border-[#235547] p-4 sm:p-6 shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-              <!-- QR & Room Code Column -->
               <div class="lg:col-span-5 flex flex-col items-center justify-center gap-3 bg-[#0C2B23] rounded-2xl p-4 border border-[#235547]">
                 <span class="text-[11px] font-bold text-[#B7C9C1]">${t('roomCode')}</span>
                 <div class="text-3xl font-black font-mono tracking-[0.2em] text-[#D6B56D]">${esc(room.code)}</div>
@@ -2326,7 +2519,6 @@
                 ` : ''}
               </div>
 
-              <!-- Players & Host Controls Column -->
               <div class="lg:col-span-7 flex flex-col justify-between gap-4">
                 <div>
                   <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -2384,7 +2576,7 @@
         `;
       }
 
-      // SCREEN 5: SHARED TABLET GAME BOARD (STRICT PRIVACY — ZERO PRIVATE TILES)
+      // SCREEN 5: SHARED TABLET GAME BOARD
       function renderTabletBoardScreen() {
         const room = store.publicState.room;
         if (!room) return '';
@@ -2394,7 +2586,6 @@
 
         return `
           <div class="anim-view h-full w-full flex flex-col p-2 sm:p-3 gap-2 overflow-hidden">
-            <!-- Public Game HUD -->
             <div class="flex flex-wrap items-center justify-between gap-2 bg-[#11392F]/95 border border-[#235547] rounded-2xl px-3 py-1.5 shrink-0 shadow-md">
               <div class="flex items-center gap-2.5 text-xs">
                 <span class="font-mono font-extrabold text-[#D6B56D] tracking-widest bg-[#0C2B23] px-2 py-0.5 rounded-lg border border-[#235547]">
@@ -2408,7 +2599,6 @@
                 </div>
               </div>
 
-              <!-- Turn / Connection Status Pill -->
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-extrabold ${
                 anyOffline
                   ? 'bg-[#D95C5C]/20 text-[#ffd2d2] border-[#D95C5C]/50'
@@ -2437,14 +2627,11 @@
               </div>
             </div>
 
-            <!-- Deep Forest Green Tabletop Felt -->
             <div class="table-felt flex-1 relative rounded-2xl border border-[#235547] flex flex-col justify-between p-2 sm:p-3.5 overflow-hidden">
-              <!-- TOP SEAT -->
               <div class="flex items-center justify-center min-h-[48px] z-10 shrink-0">
                 ${renderSeatBadge(getSeatPlayer('TOP'), 'TOP')}
               </div>
 
-              <!-- MIDDLE: LEFT SEAT + CHAIN + RIGHT SEAT + DRAW PILE -->
               <div class="flex-1 flex items-center justify-between gap-2 sm:gap-3 min-h-0 my-1">
                 <div class="flex items-center justify-center shrink-0 z-10">
                   ${renderSeatBadge(getSeatPlayer('LEFT'), 'LEFT')}
@@ -2460,7 +2647,6 @@
                 </div>
               </div>
 
-              <!-- BOTTOM SEAT -->
               <div class="flex items-center justify-center min-h-[48px] z-10 shrink-0">
                 ${renderSeatBadge(getSeatPlayer('BOTTOM'), 'BOTTOM')}
               </div>
@@ -2528,7 +2714,6 @@
           <div class="anim-view h-full w-full flex items-center justify-center p-2 sm:p-4 overflow-hidden">
             <div class="w-full max-w-[430px] h-full sm:max-h-[780px] rounded-3xl bg-[#11392F]/95 border border-[#235547] shadow-2xl flex flex-col justify-between overflow-hidden">
 
-              <!-- TOP STATUS BAR -->
               <div class="p-3.5 bg-[#0C2B23] border-b border-[#235547] flex flex-col gap-2.5 shrink-0">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2.5 min-w-0">
@@ -2557,7 +2742,6 @@
                   </div>
                 </div>
 
-                <!-- Animated Turn Banner -->
                 <div class="w-full py-2 px-3 rounded-xl text-center text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 ${
                   ps.isMyTurn ? 'bg-[#D6B56D] text-[#0F352B] anim-turn-halo' : 'bg-[#11392F] text-[#B7C9C1] border border-[#235547]'
                 }">
@@ -2566,7 +2750,6 @@
                 </div>
               </div>
 
-              <!-- COMPACT LIVE ENDS STRIP -->
               <div class="px-3.5 pt-2.5 shrink-0">
                 <div class="rounded-2xl bg-[#0C2B23] border border-[#235547] p-2.5">
                   ${isBoardEmpty ? `
@@ -2602,7 +2785,6 @@
                 </div>
               </div>
 
-              <!-- CENTER PRIVATE HAND (HORIZONTAL SNAP-SCROLL TRAY) -->
               <div class="flex-1 flex flex-col justify-center px-3.5 py-1 min-h-0">
                 <div class="flex items-center justify-between mb-1">
                   <span class="text-xs font-bold text-[#B7C9C1]">${t('privateHand')} (${ps.tiles.length})</span>
@@ -2634,7 +2816,6 @@
                 </div>
               </div>
 
-              <!-- BOTTOM ACTION BAR -->
               <div class="p-3.5 bg-[#0C2B23] border-t border-[#235547] flex flex-col gap-2 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
                 <p class="text-[11px] text-center text-[#B7C9C1] min-h-[16px]">${esc(hint)}</p>
 
@@ -2668,7 +2849,7 @@
         `;
       }
 
-      // SCREEN 8: ROUND RESULTS
+      // SCREEN 8: ROUND RESULTS (Supports Array & Object revealedHands + Team Blocked Summary)
       function renderRoundResultsScreen() {
         const room = store.publicState.room;
         if (!room) return '';
@@ -2677,20 +2858,38 @@
         const isTie = Boolean(res.isTie || res.is_tie || String(res.winnerType || '').toUpperCase() === 'TIE');
         const blocked = String(res.reason || '').toLowerCase().includes('block');
         const pts = Number(res.pointsAwarded ?? res.points_awarded ?? 0);
-        const wType = String(res.winnerType || res.winner_type || '').toUpperCase();
-        const wId = res.winnerId || res.winner_id || '';
-        const wName = wType === 'TEAM' ? (String(wId).toUpperCase() === 'A' ? t('teamA') : t('teamB')) : (res.winnerName || res.winner_name || '');
-        const revealed = res.revealedHands || res.revealed_hands || {};
+
+        const winnerTeam = res.winnerTeam || res.winner_team || null;
+        let wName = res.winnerName || res.winner_name || '';
+        if (room.maxPlayers === 4 && winnerTeam) {
+          wName = String(winnerTeam).toUpperCase() === 'A' ? t('teamA') : t('teamB');
+        }
+
+        const revealed = res.revealedHands || res.revealed_hands || [];
         const remPips = res.remainingPips || res.remaining_pips || {};
 
         const handsHtml = store.publicState.players.map((p) => {
-          const rawTiles = revealed[p.id] || revealed[String(p.seatIndex)] || [];
-          const tiles = Array.isArray(rawTiles) ? rawTiles.map(normTile) : [];
-          const sum = remPips[p.id] !== undefined ? remPips[p.id] : tiles.reduce((a, b) => a + b.left + b.right, 0);
+          let rawTiles = [];
+          let sum = 0;
+
+          if (Array.isArray(revealed)) {
+            const entry = revealed.find((h) => h.playerId === p.id || Number(h.seatIndex) === p.seatIndex);
+            rawTiles = Array.isArray(entry?.tiles) ? entry.tiles : [];
+            sum = entry?.pips !== undefined ? Number(entry.pips) : rawTiles.reduce((a, b) => a + Number(b.a ?? b.left ?? 0) + Number(b.b ?? b.right ?? 0), 0);
+          } else if (revealed && typeof revealed === 'object') {
+            const entry = revealed[p.id] || revealed[String(p.seatIndex)] || [];
+            rawTiles = Array.isArray(entry) ? entry : (Array.isArray(entry?.tiles) ? entry.tiles : []);
+            sum = remPips[p.id] !== undefined ? Number(remPips[p.id]) : rawTiles.reduce((a, b) => a + Number(b.a ?? b.left ?? 0) + Number(b.b ?? b.right ?? 0), 0);
+          }
+
+          const tiles = rawTiles.map(normTile);
+          const teamLabel = room.maxPlayers === 4 ? (p.team === 'A' || p.seatIndex % 2 === 0 ? t('teamA') : t('teamB')) : null;
+
           return `
             <div class="flex flex-wrap items-center justify-between gap-2 bg-[#11392F] px-3 py-2 rounded-xl border border-[#235547]">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-xs sm:text-sm text-white">${esc(p.name)}</span>
+                ${teamLabel ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-[#0C2B23] text-[#B7C9C1]">${teamLabel}</span>` : ''}
                 <span class="text-xs text-[#D6B56D] font-bold">(${sum} ${t('pips')})</span>
               </div>
               <div class="flex items-center gap-1 flex-wrap">
@@ -2702,6 +2901,19 @@
             </div>
           `;
         }).join('');
+
+        const teamBlockedSummary = (room.maxPlayers === 4 && blocked && res.teamAPips !== undefined && res.teamBPips !== undefined) ? `
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-[#0C2B23] border ${winnerTeam === 'A' ? 'border-[#D6B56D]' : 'border-[#235547]'} rounded-xl py-2 px-3">
+              <div class="text-[11px] text-[#B7C9C1]">${t('teamA')}</div>
+              <div class="text-sm font-black text-white">${res.teamAPips} ${t('pips')}</div>
+            </div>
+            <div class="bg-[#0C2B23] border ${winnerTeam === 'B' ? 'border-[#D6B56D]' : 'border-[#235547]'} rounded-xl py-2 px-3">
+              <div class="text-[11px] text-[#B7C9C1]">${t('teamB')}</div>
+              <div class="text-sm font-black text-white">${res.teamBPips} ${t('pips')}</div>
+            </div>
+          </div>
+        ` : '';
 
         const scoresHtml = room.maxPlayers === 4
           ? [{ l: t('teamA'), s: room.teamScores.A }, { l: t('teamB'), s: room.teamScores.B }].map((tm) => `
@@ -2741,6 +2953,8 @@
                 ${pts > 0 ? `<div class="mt-2.5 inline-flex px-4 py-1 rounded-xl bg-[#D6B56D]/20 border border-[#D6B56D] text-[#D6B56D] text-sm font-extrabold">+${pts} ${t('pts')}</div>` : ''}
               </div>
 
+              ${teamBlockedSummary}
+
               <div class="bg-[#0C2B23] rounded-2xl p-3.5 border border-[#235547]">
                 <h4 class="text-xs font-bold text-[#B7C9C1] mb-2.5">${t('revealedHands')}</h4>
                 <div class="flex flex-col gap-2">${handsHtml}</div>
@@ -2767,7 +2981,7 @@
         `;
       }
 
-      // SCREEN 9: MATCH RESULTS (WITH GOLDEN CONFETTI CANVAS)
+      // SCREEN 9: MATCH RESULTS
       function renderMatchResultsScreen() {
         const room = store.publicState.room;
         if (!room) return '';
@@ -2834,13 +3048,12 @@
         `;
       }
 
-      // BOTTOM SHEETS & OVERLAYS (SETTINGS, DEVICE SIMULATOR, CONFIRM, DISCONNECTED)
+      // BOTTOM SHEETS & OVERLAYS
       function renderModals() {
         const root = document.getElementById('modal-root');
         if (!root) return;
         let html = '';
 
-        // Settings Bottom Sheet
         if (store.uiState.settingsOpen) {
           const room = store.publicState.room;
           const canHostEdit = !room || Boolean(store.uiState.hostToken);
@@ -2881,7 +3094,7 @@
                     <span class="text-sm text-white font-semibold">${t('langLabel')}</span>
                     <button type="button" data-action="toggle-lang"
                       class="px-3.5 py-1.5 rounded-full bg-[#17463A] border border-[#2A6152] text-xs font-extrabold text-[#D6B56D] active:scale-95">
-                      ${store.uiState.lang === 'ar' ? 'العربية (RTL)' : 'English (LTR)'}
+                      ${store.uiState.lang === 'ar' ? 'مصري (RTL)' : 'English (LTR)'}
                     </button>
                   </div>
 
@@ -2923,7 +3136,6 @@
           `;
         }
 
-        // Device Simulator Bottom Sheet
         if (store.uiState.simOpen) {
           const room = store.publicState.room;
           const tp = getTurnPlayer();
@@ -3041,7 +3253,6 @@
           `;
         }
 
-        // Confirm Return Home Dialog
         if (store.uiState.confirmHomeOpen) {
           html += `
             <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -3061,7 +3272,6 @@
           `;
         }
 
-        // Screen 10: Disconnected / Reconnection Overlay
         if (store.uiState.isDisconnected) {
           html += `
             <div class="fixed inset-0 z-50 bg-[#081E18]/92 backdrop-blur-md flex items-center justify-center p-4">
@@ -3122,7 +3332,6 @@
         }
         main.innerHTML = html;
 
-        // Bind Inline Join Form (Landing Tab 2) or Dedicated Join Form
         const bindForm = (formId, codeId, nameId) => {
           const form = document.getElementById(formId);
           if (!form) return;
@@ -3145,6 +3354,11 @@
 
         renderModals();
         lucide.createIcons();
+
+        // Scale the connected domino snake cleanly to fit the felt viewport
+        if (store.uiState.screen === 'TABLE_BOARD') {
+          requestAnimationFrame(fitBoardSnake);
+        }
       }
 
       // ======================================================================
@@ -3223,7 +3437,7 @@
         try {
           const pool = isBot ? BOT_NAMES[store.uiState.lang] : TEST_HUMAN_NAMES[store.uiState.lang];
           const used = new Set(store.publicState.players.map((p) => p.name));
-          const nextName = pool.find((n) => !used.has(n)) || (isBot ? `Bot ${store.publicState.players.length + 1}` : `Player ${store.publicState.players.length + 1}`);
+          const nextName = pool.find((n) => !used.has(n)) || (isBot ? `بوت ${store.publicState.players.length + 1}` : `لاعب ${store.publicState.players.length + 1}`);
           const { player, playerToken } = await playerService.joinRoom(room.code, nextName, isBot);
           store.uiState.localPlayers[player.id] = {
             id: player.id,
@@ -3716,7 +3930,7 @@
             audioEngine.tap();
             haptics.tap();
             store.uiState.role = 'TABLE';
-            wipePrivateState(); // STRICT PRIVACY: wipe private tiles when switching to Tablet
+            wipePrivateState();
             store.uiState.simOpen = false;
             store.uiState.screen = screenForCurrentRoom();
             saveSession();
@@ -3773,7 +3987,12 @@
         }
       });
 
-      // Browser network status listeners
+      window.addEventListener('resize', () => {
+        if (store.uiState.screen === 'TABLE_BOARD') {
+          renderApp();
+        }
+      });
+
       window.addEventListener('offline', () => {
         if (store.publicState.room) {
           store.uiState.isDisconnected = true;
@@ -3792,7 +4011,6 @@
       async function boot() {
         loadPrefs();
 
-        // 1.1s Splash Screen (tap to skip)
         const splash = document.getElementById('splash-screen');
         const dismissSplash = () => {
           if (!splash || splash.dataset.done) return;
@@ -3811,7 +4029,6 @@
         const saved = loadSession();
         store.uiState.savedSession = saved;
 
-        // Handle ?join=ROOMCODE from QR scans on real smartphones
         const params = new URLSearchParams(window.location.search);
         const joinParam = params.get('join');
         if (joinParam && joinParam.trim().length > 0) {
@@ -3822,7 +4039,6 @@
           return;
         }
 
-        // Auto-reconnect if saved session exists
         if (saved?.roomCode) {
           store.uiState.hostToken = saved.hostToken || null;
           store.uiState.role = saved.role || 'TABLE';
