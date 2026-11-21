@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F352B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="دومينو المجلس" />
+  <title>دومينو المجلس | Domino Majlis</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Cairo (Arabic) & Inter (English) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- QRCode Generator CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+  <!-- Supabase JS v2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ========================================================================
+       1. DESIGN SYSTEM TOKENS & TRUE NATIVE WEB APP VIEWPORT LOCK
+       ======================================================================== */
+    :root {
+      --bg-app: #0F352B;
+      --bg-table: #123D32;
+      --bg-card: #11392F;
+      --bg-input: #0C2B23;
+      --bg-secondary: #1A5142;
+      --bg-icon: #1A4B3E;
+      --border-card: #235547;
+      --border-strong: #2A6152;
+      --gold: #D6B56D;
+      --gold-hover: #E3C47E;
+      --gold-text: #0F352B;
+      --ivory: #F5F0E5;
+      --pips: #20231F;
+      --text-main: #FFFFFF;
+      --text-muted: #B7C9C1;
+      --danger: #D95C5C;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100dvh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      font-family: 'Cairo', 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    html[dir="ltr"] body {
+      font-family: 'Inter', 'Cairo', system-ui, -apple-system, sans-serif;
+    }
+
+    input, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* Subtle internal scrollbars (for hand tray & tall sheets only) */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .app-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .app-scroll::-webkit-scrollbar-track { background: transparent; }
+    .app-scroll::-webkit-scrollbar-thumb { background: rgba(214, 181, 109, 0.25); border-radius: 999px; }
+
+    /* ========================================================================
+       2. 60FPS MOTION GRAPHICS & SPRING ANIMATIONS
+       ======================================================================== */
+    @keyframes splashFlip3D {
+      0% { transform: perspective(750px) rotateY(-180deg) scale(0.55); opacity: 0; }
+      65% { transform: perspective(750px) rotateY(14deg) scale(1.06); opacity: 1; }
+      100% { transform: perspective(750px) rotateY(0deg) scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeUpSpring {
+      0% { opacity: 0; transform: translateY(14px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes viewTransitionIn {
+      0% { opacity: 0; transform: translateY(10px) scale(0.985); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes cardMorphIn {
+      0% { opacity: 0; transform: translateY(6px) scale(0.99); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes ambientSpotlight {
+      0%, 100% { opacity: 0.16; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.28; transform: translateX(-50%) scale(1.08); }
+    }
+
+    @keyframes floatTileA {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-18deg); }
+      50% { transform: translate3d(0, -16px, 0) rotate(-11deg); }
+    }
+
+    @keyframes floatTileB {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(21deg); }
+      50% { transform: translate3d(0, 14px, 0) rotate(14deg); }
+    }
+
+    @keyframes goldSheen {
+      0% { transform: translateX(-140%) skewX(-18deg); }
+      42% { transform: translateX(160%) skewX(-18deg); }
+      100% { transform: translateX(160%) skewX(-18deg); }
+    }
+
+    @keyframes tileDropIn {
+      0% { transform: scale(1.4) translateY(-14px); opacity: 0; }
+      65% { transform: scale(0.96) translateY(2px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes impactRipple {
+      0% { transform: scale(0.88); opacity: 0.95; }
+      100% { transform: scale(1.85); opacity: 0; }
+    }
+
+    @keyframes turnHalo {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(214, 181, 109, 0.36), 0 0 18px rgba(214, 181, 109, 0.22); }
+      50% { box-shadow: 0 0 0 5px rgba(214, 181, 109, 0.08), 0 0 28px rgba(214, 181, 109, 0.45); }
+    }
+
+    @keyframes endPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(214, 181, 109, 0.3); }
+      50% { box-shadow: 0 0 18px 2px rgba(214, 181, 109, 0.65); }
+    }
+
+    @keyframes sheetSlideUp {
+      0% { transform: translateY(100%); opacity: 0.6; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.92) translateY(14px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes radarWave {
+      0% { transform: scale(1); opacity: 0.72; }
+      100% { transform: scale(1.95); opacity: 0; }
+    }
+
+    @keyframes toastEnter {
+      0% { transform: translate(-50%, -20px) scale(0.94); opacity: 0; }
+      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+    }
+
+    .anim-splash-3d { animation: splashFlip3D 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .anim-fade-up { animation: fadeUpSpring 0.4s 0.18s ease-out both; }
+    .anim-view { animation: viewTransitionIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-card-morph { animation: cardMorphIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-spotlight { animation: ambientSpotlight 8s ease-in-out infinite; }
+    .anim-float-a { animation: floatTileA 18s ease-in-out infinite; }
+    .anim-float-b { animation: floatTileB 22s ease-in-out infinite; }
+    .anim-tile-drop { animation: tileDropIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-turn-halo { animation: turnHalo 2s ease-in-out infinite; }
+    .anim-end-pulse { animation: endPulse 1.3s ease-in-out infinite; }
+    .anim-sheet { animation: sheetSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-modal { animation: modalPop 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .anim-toast { animation: toastEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* ========================================================================
+       3. PRIMARY GOLD SHIMMER BUTTON & SEGMENTED SWITCHER
+       ======================================================================== */
+    .btn-gold {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--gold);
+      color: var(--gold-text);
+      font-weight: 800;
+      box-shadow: 0 8px 22px rgba(214, 181, 109, 0.24);
+      transition: transform 0.14s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .btn-gold:hover:not(:disabled) {
+      background-color: var(--gold-hover);
+      box-shadow: 0 10px 26px rgba(214, 181, 109, 0.34);
+    }
+    .btn-gold:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+    .btn-gold:disabled {
+      background-color: rgba(23, 70, 58, 0.65);
+      color: rgba(183, 201, 193, 0.45);
+      border: 1px solid var(--border-card);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .btn-gold:not(:disabled)::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 55%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: goldSheen 3.6s infinite;
+      pointer-events: none;
+    }
+
+    /* Animated Segmented Mode Switcher Pill */
+    .segmented-track {
+      position: relative;
+      background-color: #0B2A22;
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .segmented-thumb {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      width: calc(50% - 4px);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #DFBF78 0%, #D6B56D 100%);
+      box-shadow: 0 4px 14px rgba(214, 181, 109, 0.28);
+      transition: inset-inline-start 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    /* ========================================================================
+       4. REALISTIC 3D-BEVELED WARM IVORY DOMINO TILES
+       ======================================================================== */
+    .domino-tile {
+      position: relative;
+      background: linear-gradient(165deg, #FAF6EE 0%, #F5F0E5 60%, #EAE1CE 100%);
+      border: 1px solid #DDD4C1;
+      border-radius: 11px;
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.4),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -3px 0 rgba(155, 140, 112, 0.45);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .domino-tile.playable {
+      box-shadow:
+        0 0 0 2px rgba(214, 181, 109, 0.8),
+        0 8px 16px rgba(0, 0, 0, 0.44),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -3px 0 rgba(155, 140, 112, 0.45);
+      cursor: pointer;
+    }
+
+    .domino-tile.playable:hover {
+      transform: translateY(-6px);
+    }
+
+    .domino-tile.selected {
+      transform: translateY(-14px) scale(1.04) !important;
+      box-shadow:
+        0 0 0 2.5px #D6B56D,
+        0 16px 28px rgba(214, 181, 109, 0.44),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.98),
+        inset 0 -3px 0 rgba(155, 140, 112, 0.45);
+      z-index: 12;
+    }
+
+    .domino-tile.dimmed {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .domino-impact-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 11px;
+      border: 2px solid #D6B56D;
+      animation: impactRipple 0.65s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .domino-back {
+      background: linear-gradient(145deg, #1A5142, #123B30);
+      border: 1px solid #2A6152;
+      border-radius: 6px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .table-felt {
+      background-color: var(--bg-table);
+      background-image:
+        radial-gradient(ellipse at 50% 45%, rgba(28, 94, 76, 0.48) 0%, rgba(18, 61, 50, 0.88) 72%, rgba(10, 35, 28, 0.96) 100%);
+      box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.46);
+    }
+  </style>
+</head>
+
+<body class="h-[100dvh] w-screen overflow-hidden flex flex-col relative">
+
+  <!-- ========================================================================
+       ANIMATED APP SPLASH SCREEN (~1.1s, TAP TO SKIP)
+       ======================================================================== -->
+  <div id="splash-screen" class="fixed inset-0 z-[100] bg-[#0B2A22] flex flex-col items-center justify-center gap-4 cursor-pointer transition-opacity duration-300">
+    <div class="absolute w-72 h-72 rounded-full pointer-events-none"
+         style="background: radial-gradient(circle, rgba(214,181,109,0.28) 0%, rgba(15,53,43,0) 70%);"></div>
+
+    <div class="anim-splash-3d relative w-16 h-28 rounded-2xl bg-[#F5F0E5] border-2 border-[#D6B56D] shadow-[0_20px_50px_rgba(0,0,0,0.55)] flex flex-col items-center justify-between p-2.5">
+      <div class="flex-1 w-full flex items-center justify-center">
+        <div class="w-3.5 h-3.5 rounded-full bg-[#20231F]"></div>
+      </div>
+      <div class="w-10 h-[2px] bg-[#D6B56D] rounded-full"></div>
+      <div class="flex-1 w-full grid grid-cols-2 gap-1.5 place-items-center p-1">
+        <div class="w-2.5 h-2.5 rounded-full bg-[#20231F]"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-[#20231F]"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-[#20231F]"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-[#20231F]"></div>
+      </div>
+    </div>
+
+    <div class="anim-fade-up text-center z-10">
+      <h1 id="splash-title" class="text-3xl font-black text-white tracking-tight">دومينو المجلس</h1>
+      <p id="splash-sub" class="text-xs font-bold text-[#D6B56D] mt-1">طاولة رقمية متعددة الأجهزة</p>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       60FPS AMBIENT MOTION GRAPHICS BACKGROUND LAYER
+       ======================================================================== -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute inset-0"
+         style="background: radial-gradient(ellipse at 50% 24%, rgba(26, 81, 66, 0.56) 0%, rgba(15, 53, 43, 0.96) 66%, rgba(9, 34, 27, 1) 100%);"></div>
+    <div class="absolute inset-0 opacity-[0.04]"
+         style="background-image: radial-gradient(#ffffff 0.7px, transparent 0.7px), radial-gradient(#D6B56D 0.6px, transparent 0.6px); background-size: 26px 26px; background-position: 0 0, 13px 13px;"></div>
+    <div class="anim-spotlight absolute -top-24 left-1/2 w-[500px] h-[320px] rounded-full"
+         style="background: radial-gradient(circle, rgba(214,181,109,0.22) 0%, rgba(15,53,43,0) 70%);"></div>
+
+    <!-- Gently Floating Translucent Domino Silhouettes -->
+    <div id="ambient-silhouettes">
+      <div class="anim-float-a absolute left-[6%] top-[16%] w-12 h-22 rounded-xl border border-[#D6B56D]/15 bg-[#1A5142]/15 flex flex-col items-center justify-between p-2 opacity-50">
+        <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30 mt-1.5"></div>
+        <div class="w-7 h-px bg-[#D6B56D]/20"></div>
+        <div class="flex gap-1.5 mb-1.5">
+          <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30"></div>
+          <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30"></div>
+        </div>
+      </div>
+      <div class="anim-float-b absolute left-[84%] top-[18%] w-12 h-22 rounded-xl border border-[#D6B56D]/15 bg-[#1A5142]/15 flex flex-col items-center justify-between p-2 opacity-45">
+        <div class="flex gap-1.5 mt-1.5">
+          <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30"></div>
+          <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30"></div>
+        </div>
+        <div class="w-7 h-px bg-[#D6B56D]/20"></div>
+        <div class="w-2 h-2 rounded-full bg-[#D6B56D]/30 mb-1.5"></div>
+      </div>
+      <div class="anim-float-b absolute left-[10%] top-[76%] w-11 h-20 rounded-xl border border-[#D6B56D]/12 bg-[#1A5142]/12 flex flex-col items-center justify-between p-2 opacity-40">
+        <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30 mt-1.5"></div>
+        <div class="w-6 h-px bg-[#D6B56D]/20"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30 mb-1.5"></div>
+      </div>
+      <div class="anim-float-a absolute left-[82%] top-[75%] w-11 h-20 rounded-xl border border-[#D6B56D]/12 bg-[#1A5142]/12 flex flex-col items-center justify-between p-2 opacity-40">
+        <div class="flex gap-1 mt-1.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30"></div>
+        </div>
+        <div class="w-6 h-px bg-[#D6B56D]/20"></div>
+        <div class="flex gap-1 mb-1.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-[#D6B56D]/30"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FIXED COMPACT APP TOP BAR (h-14, FROSTED EMERALD GLASS)
+       All global controls live strictly here (No bottom dock / no floating banner)
+       ======================================================================== -->
+  <header id="app-topbar"
+          style="background: rgba(15, 53, 43, 0.88); padding-top: env(safe-area-inset-top);"
+          class="relative z-30 h-14 px-3.5 sm:px-5 backdrop-blur-xl border-b border-[#235547] flex items-center justify-between shrink-0"></header>
+
+  <!-- ========================================================================
+       MAIN LOCKED VIEWPORT CONTAINER
+       ======================================================================== -->
+  <main id="app-main" class="relative z-10 flex-1 w-full min-h-0 overflow-hidden"></main>
+
+  <!-- ========================================================================
+       TOAST, CONFETTI CANVAS & MODAL / BOTTOM-SHEET LAYERS
+       ======================================================================== -->
+  <div id="toast-root" class="pointer-events-none fixed top-16 left-1/2 -translate-x-1/2 z-50"></div>
+  <canvas id="confetti-canvas" class="pointer-events-none fixed inset-0 z-50 hidden"></canvas>
+  <div id="modal-root"></div>
+
+  <!-- ========================================================================
+       MODULAR APPLICATION SCRIPT (LIVE SUPABASE + REALTIME + AUDIO + HAPTICS)
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ======================================================================
+      // 1. LIVE SUPABASE CONNECTION
+      // ======================================================================
+      const SUPABASE_URL = 'https://bpmqdjcmajmccidervmz.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwbXFkamNtYWptY2NpZGVydm16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNzcyMzcsImV4cCI6MjExMDg1MzIzN30.ylbo6QsStGtBhhzFUCpkW5cAWj1pKzxvYdmOkYckCR8';
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const STORAGE_SESSION = 'domino_majlis_session_v2';
+      const STORAGE_PREFS = 'domino_majlis_prefs_v2';
+
+      // ======================================================================
+      // 2. BILINGUAL DICTIONARY (ARABIC RTL DEFAULT & ENGLISH LTR)
+      // ======================================================================
+      const DICT = {
+        ar: {
+          brand: 'دومينو المجلس',
+          langPill: 'English',
+          live: 'مباشر',
+          eyebrow: 'طاولة رقمية متعددة الأجهزة',
+          heroTitle: 'طاولة دومينو حقيقية بين أيديكم',
+          heroSub: 'ضع التابلت في المنتصف ليكون طاولة اللعب العامة، بينما يتحكم كل لاعب بقطعه سرياً من هاتفه الخاص.',
+          tabTable: 'الطاولة',
+          tabPlayer: 'اللاعب',
+          resumeChip: 'العودة للغرفة السابقة',
+          tableLabel: 'شاشة التابلت المشتركة',
+          tableTitle: 'الطاولة',
+          tableDesc: 'أنشئ غرفة جديدة وأعرض الطاولة العامة مع رمز الغرفة ورمز QR.',
+          privacyRow: 'خصوصية تامة: لا تظهر قطع أي لاعب على شاشة الطاولة أبداً.',
+          createTableBtn: 'إنشاء طاولة جديدة',
+          settingsBtn: 'الإعدادات',
+          playerLabel: 'شاشة الهاتف الخاصة',
+          playerTitle: 'اللاعب',
+          playerDesc: 'انضم إلى غرفة قائمة باستخدام الرمز وتحكم بقطعك سرياً من هاتفك.',
+          codePlaceholder: 'رمز الغرفة (6 أحرف)',
+          namePlaceholder: 'اسم اللاعب (مثال: عمر)',
+          joinBtn: 'انضمام إلى الغرفة',
+          createTitle: 'إعداد طاولة جديدة',
+          createSub: 'اختر عدد اللاعبين ونقاط الفوز لإنشاء غرفة مباشرة.',
+          playerCount: 'عدد اللاعبين',
+          p2: 'لاعبان',
+          p2Sub: '14 للسحب',
+          p3: '3 لاعبين',
+          p3Sub: '7 للسحب',
+          p4: '4 لاعبين',
+          p4Sub: 'فريقان 2v2',
+          targetScore: 'هدف النقاط',
+          tieRule: 'قاعدة التعادل عند الإغلاق',
+          tieNoPoints: 'لا تُمنح نقاط',
+          tieSplit: 'تقسيم النقاط',
+          tieBlockerLoses: 'يخسر المغلق',
+          createSubmit: 'إنشاء الغرفة وفتح الطاولة',
+          creating: 'جاري الإنشاء...',
+          joinTitle: 'الانضمام إلى الغرفة',
+          joinSub: 'أدخل رمز الغرفة المكون من 6 أحرف الظاهر على التابلت.',
+          joining: 'جاري الانضمام...',
+          waitingTitle: 'غرفة الانتظار',
+          roomCode: 'رمز الغرفة',
+          scanHint: 'امسح رمز QR من هاتف كل لاعب للانضمام فوراً',
+          copyCode: 'نسخ الرمز',
+          copyLink: 'نسخ الرابط',
+          copied: 'تم النسخ!',
+          playersJoined: 'اللاعبون المتصلون',
+          addBot: 'إضافة بوت AI',
+          addTestHuman: 'إضافة لاعب محلي',
+          startMatch: 'بدء المباراة',
+          waitingMore: 'بانتظار اكتمال اللاعبين...',
+          waitingHostStart: 'بانتظار بدء المباراة من شاشة الطاولة...',
+          toggleReady: 'تبديل الجاهزية',
+          ready: 'جاهز',
+          notReady: 'غير جاهز',
+          bot: 'بوت',
+          teamA: 'الفريق أ',
+          teamB: 'الفريق ب',
+          round: 'الجولة',
+          target: 'الهدف',
+          pts: 'نقطة',
+          pips: 'نقطة',
+          drawPile: 'السحب',
+          tilesLeft: 'قطعة',
+          turnOf: 'دور',
+          yourTurn: 'دورك الآن!',
+          waitingTurn: 'بانتظار دور',
+          offlineWarn: 'لاعب منقطع',
+          botThinking: 'البوت يفكر...',
+          botStep: 'نقلة بوت',
+          emptyBoard: 'الطاولة فارغة — بانتظار أول قطعة دومينو',
+          emptyOpenAny: 'الطاولة فارغة — اختر أي قطعة للبدء',
+          leftEnd: 'اليسار',
+          rightEnd: 'اليمين',
+          chooseEnd: 'اختر الطرف:',
+          playTile: 'لعب القطعة',
+          drawTile: 'سحب قطعة',
+          passTurn: 'تمرير الدور',
+          privateHand: 'قطعك السرية',
+          onBoard: 'على الطاولة',
+          hintSelect: 'اضغط على قطعة مضيئة بالذهبي للعبها.',
+          hintPickEnd: 'اختر طرف اليسار أو اليمين ثم اضغط لعب القطعة.',
+          hintPressPlay: 'اضغط "لعب القطعة" لوضعها على الطاولة.',
+          hintDraw2: 'لا توجد نقلة — اسحب حتى تحصل على قطعة مناسبة.',
+          hintDraw3: 'لا توجد نقلة — اسحب قطعة واحدة فقط.',
+          hintPass: 'لا توجد نقلة متاحة — مرّر الدور.',
+          online: 'متصل',
+          offline: 'منقطع',
+          score: 'النقاط',
+          settingsTitle: 'الإعدادات',
+          soundLabel: 'المؤثرات الصوتية',
+          hapticsLabel: 'الاهتزاز اللمسي',
+          autoBotLabel: 'لعب تلقائي للبوتات',
+          langLabel: 'اللغة',
+          hostRulesTitle: 'قواعد الغرفة (المضيف)',
+          saveClose: 'حفظ وإغلاق',
+          roundResults: 'نتائج الجولة',
+          reasonDomino: 'دومينو! أنهى جميع قطعه',
+          reasonBlocked: 'إغلاق اللعبة — أقل مجموع نقاط',
+          roundWinner: 'الفائز بالجولة',
+          roundTie: 'تعادل في الإغلاق!',
+          revealedHands: 'القطع المتبقية بنهاية الجولة',
+          scoreboard: 'لوحة النقاط',
+          nextRound: 'الجولة التالية',
+          waitingHostNext: 'بانتظار شاشة الطاولة لبدء الجولة التالية...',
+          matchChampion: 'بطل المباراة!',
+          finalStandings: 'الترتيب النهائي',
+          roundsPlayed: 'الجولات الملعوبة',
+          rematch: 'مباراة جديدة',
+          returnHome: 'الرئيسية',
+          waitingHostRematch: 'بانتظار الطاولة لبدء مباراة جديدة.',
+          connLost: 'انقطع الاتصال',
+          connLostDesc: 'فقد الاتصال المباشر بطاولة الدومينو. حالتك وقطعك محفوظة بأمان على السحابة.',
+          reconnectBtn: 'إعادة الاتصال الآن',
+          reconnecting: 'جاري إعادة الاتصال...',
+          simTitle: 'محاكي الأجهزة المتعددة',
+          simDesc: 'اختبر الطاولة وهواتف اللاعبين من نفس المتصفح مباشرة على Supabase.',
+          simNoRoom: 'أنشئ غرفة أو انضم لغرفة أولاً لاستخدام المحاكي.',
+          simTablet: 'شاشة التابلت المشتركة',
+          simPhones: 'هواتف اللاعبين المحليين',
+          simTools: 'أدوات المحاكاة',
+          simDisconnect: 'محاكاة انقطاع',
+          simReconnect: 'استعادة الاتصال',
+          simLeave: 'مغادرة الغرفة',
+          confirmHomeTitle: 'العودة إلى الرئيسية؟',
+          confirmHomeDesc: 'ستبقى الغرفة نشطة على السحابة ويمكنك العودة لها بنقرة واحدة.',
+          stay: 'البقاء',
+          goHome: 'الرئيسية',
+          back: 'رجوع',
+          you: 'أنت',
+          actPlayed: 'لعب',
+          actDrew: 'سحب قطعة',
+          actPassed: 'مرّر الدور',
+          invalidTile: 'هذه القطعة لا تطابق أي طرف متاح',
+          settingsSaved: 'تم تحديث الإعدادات',
+          extPlayerLock: 'جهاز خارجي (قطع محمية بـ RLS)',
+          errNotFound: 'الغرفة غير موجودة. تحقق من الرمز.',
+          errFull: 'الغرفة ممتلئة بالفعل.',
+          errStarted: 'المباراة بدأت بالفعل في هذه الغرفة.',
+          errGeneral: 'تعذر الاتصال بالخادم، حاول مجدداً.',
+          autoPassedMsg: 'القطعة المسحوبة غير مناسبة — تم تمرير الدور تلقائياً',
+        },
+        en: {
+          brand: 'Domino Majlis',
+          langPill: 'العربية',
+          live: 'LIVE',
+          eyebrow: 'Multi-Device Digital Tabletop',
+          heroTitle: 'A Real Domino Table Right Between You',
+          heroSub: 'Place the tablet in the center as the shared board while each player privately controls their tiles on their own smartphone.',
+          tabTable: 'Table Mode',
+          tabPlayer: 'Player Mode',
+          resumeChip: 'Return to Previous Room',
+          tableLabel: 'Shared Tablet Screen',
+          tableTitle: 'Table Mode',
+          tableDesc: 'Create a new room and display the public tabletop with room code and QR code.',
+          privacyRow: 'Full Privacy: Player tiles are never shown on the tablet screen.',
+          createTableBtn: 'Create New Table',
+          settingsBtn: 'Settings',
+          playerLabel: 'Private Smartphone Screen',
+          playerTitle: 'Player Mode',
+          playerDesc: 'Join an existing room using its code and privately control your tiles on your phone.',
+          codePlaceholder: 'Room Code (6 chars)',
+          namePlaceholder: 'Player Name (e.g. Omar)',
+          joinBtn: 'Join Room',
+          createTitle: 'Setup New Table',
+          createSub: 'Choose player count and target score to launch a live cloud room.',
+          playerCount: 'Number of Players',
+          p2: '2 Players',
+          p2Sub: '14 draw pile',
+          p3: '3 Players',
+          p3Sub: '7 draw pile',
+          p4: '4 Players',
+          p4Sub: '2v2 Teams',
+          targetScore: 'Score Target',
+          tieRule: 'Blocked-Round Tie Rule',
+          tieNoPoints: 'No Points',
+          tieSplit: 'Split Points',
+          tieBlockerLoses: 'Blocker Loses',
+          createSubmit: 'Create Room & Open Table',
+          creating: 'Creating...',
+          joinTitle: 'Join Room',
+          joinSub: 'Enter the 6-character room code shown on the shared tablet.',
+          joining: 'Joining...',
+          waitingTitle: 'Waiting Room',
+          roomCode: 'Room Code',
+          scanHint: 'Scan the QR code from each smartphone to join directly',
+          copyCode: 'Copy Code',
+          copyLink: 'Copy Link',
+          copied: 'Copied!',
+          playersJoined: 'Connected Players',
+          addBot: 'Add AI Bot',
+          addTestHuman: 'Add Local Player',
+          startMatch: 'Start Match',
+          waitingMore: 'Waiting for players...',
+          waitingHostStart: 'Waiting for the tablet host to start the match...',
+          toggleReady: 'Toggle Ready',
+          ready: 'Ready',
+          notReady: 'Not Ready',
+          bot: 'BOT',
+          teamA: 'Team A',
+          teamB: 'Team B',
+          round: 'Round',
+          target: 'Target',
+          pts: 'pts',
+          pips: 'pips',
+          drawPile: 'Draw',
+          tilesLeft: 'tiles',
+          turnOf: 'Turn:',
+          yourTurn: 'Your Turn!',
+          waitingTurn: 'Waiting for',
+          offlineWarn: 'Player Offline',
+          botThinking: 'Bot playing...',
+          botStep: 'Bot Move',
+          emptyBoard: 'Table empty — waiting for the first domino tile',
+          emptyOpenAny: 'Table empty — select any tile to open',
+          leftEnd: 'Left',
+          rightEnd: 'Right',
+          chooseEnd: 'Choose end:',
+          playTile: 'Play Tile',
+          drawTile: 'Draw Tile',
+          passTurn: 'Pass Turn',
+          privateHand: 'Your Private Hand',
+          onBoard: 'On Table',
+          hintSelect: 'Tap a gold-highlighted tile to play.',
+          hintPickEnd: 'Pick Left or Right end, then tap Play Tile.',
+          hintPressPlay: 'Tap "Play Tile" to place it on the table.',
+          hintDraw2: 'No valid move — draw until you get a playable tile.',
+          hintDraw3: 'No valid move — draw exactly 1 tile.',
+          hintPass: 'No valid moves available — pass your turn.',
+          online: 'Online',
+          offline: 'Offline',
+          score: 'Score',
+          settingsTitle: 'Settings',
+          soundLabel: 'Sound Effects',
+          hapticsLabel: 'Haptic Feedback',
+          autoBotLabel: 'Auto-Play Bots',
+          langLabel: 'Language',
+          hostRulesTitle: 'Room Rules (Host)',
+          saveClose: 'Save & Close',
+          roundResults: 'Round Results',
+          reasonDomino: 'Domino! Hand Emptied',
+          reasonBlocked: 'Game Blocked — Lowest Pip Total',
+          roundWinner: 'Round Winner',
+          roundTie: 'Blocked Round — Tie!',
+          revealedHands: 'Remaining Tiles Reveal',
+          scoreboard: 'Scoreboard',
+          nextRound: 'Next Round',
+          waitingHostNext: 'Waiting for table to start next round...',
+          matchChampion: 'Match Champion!',
+          finalStandings: 'Final Standings',
+          roundsPlayed: 'Rounds Played',
+          rematch: 'Rematch',
+          returnHome: 'Home',
+          waitingHostRematch: 'Waiting for table to start a rematch.',
+          connLost: 'Connection Lost',
+          connLostDesc: 'Live connection to the Domino table was interrupted. Your hand and progress are safely stored in Supabase.',
+          reconnectBtn: 'Reconnect Now',
+          reconnecting: 'Reconnecting...',
+          simTitle: 'Multi-Device Simulator',
+          simDesc: 'Test the shared Tablet view and Player 1–4 smartphones live in one browser.',
+          simNoRoom: 'Create or join a room first to use the device simulator.',
+          simTablet: 'Shared Tablet View',
+          simPhones: 'Local Player Phones',
+          simTools: 'Simulator Tools',
+          simDisconnect: 'Simulate Disconnect',
+          simReconnect: 'Restore Connection',
+          simLeave: 'Leave Room',
+          confirmHomeTitle: 'Return to Home?',
+          confirmHomeDesc: 'The room stays active in the cloud and you can rejoin with one tap.',
+          stay: 'Stay',
+          goHome: 'Home',
+          back: 'Back',
+          you: 'You',
+          actPlayed: 'played',
+          actDrew: 'drew a tile',
+          actPassed: 'passed',
+          invalidTile: 'Tile does not match any open end',
+          settingsSaved: 'Settings updated',
+          extPlayerLock: 'External device (RLS protected)',
+          errNotFound: 'Room not found. Double-check the code.',
+          errFull: 'Room is already full.',
+          errStarted: 'Game already started in this room.',
+          errGeneral: 'Server error, please try again.',
+          autoPassedMsg: 'Drawn tile unplayable — turn passed automatically',
+        },
+      };
+
+      const BOT_NAMES = {
+        ar: ['كريم', 'ليلى', 'طارق', 'نور'],
+        en: ['Karim', 'Layla', 'Tariq', 'Nour'],
+      };
+      const TEST_HUMAN_NAMES = {
+        ar: ['عمر', 'سارة', 'يوسف', 'مريم'],
+        en: ['Omar', 'Sara', 'Youssef', 'Mariam'],
+      };
+
+      // ======================================================================
+      // 3. SYNTHESIZED WEB AUDIO ENGINE & HAPTICS ENGINE
+      // ======================================================================
+      const audioEngine = {
+        ctx: null,
+        enabled: true,
+
+        ensure() {
+          if (!this.enabled) return null;
+          if (!this.ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) this.ctx = new AC();
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+          return this.ctx;
+        },
+
+        tap() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(240, now + 0.042);
+          g.gain.setValueAtTime(0.075, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.048);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.052);
+        },
+
+        clack() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(1060, now);
+          osc.frequency.exponentialRampToValueAtTime(165, now + 0.062);
+          g.gain.setValueAtTime(0.22, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.072);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.078);
+
+          const thud = ctx.createOscillator();
+          const tg = ctx.createGain();
+          thud.type = 'sine';
+          thud.frequency.setValueAtTime(150, now + 0.01);
+          thud.frequency.exponentialRampToValueAtTime(52, now + 0.09);
+          tg.gain.setValueAtTime(0.16, now + 0.01);
+          tg.gain.exponentialRampToValueAtTime(0.001, now + 0.095);
+          thud.connect(tg);
+          tg.connect(ctx.destination);
+          thud.start(now + 0.01);
+          thud.stop(now + 0.1);
+        },
+
+        drawSwoosh() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(280, now);
+          osc.frequency.exponentialRampToValueAtTime(660, now + 0.09);
+          g.gain.setValueAtTime(0.09, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.098);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.105);
+        },
+
+        turnChime() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [523.25, 659.25].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.085);
+            g.gain.setValueAtTime(0.09, now + i * 0.085);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.085 + 0.22);
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start(now + i * 0.085);
+            osc.stop(now + i * 0.085 + 0.24);
+          });
+        },
+
+        winChord() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + i * 0.095);
+            g.gain.setValueAtTime(0.12, now + i * 0.095);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.095 + 0.42);
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start(now + i * 0.095);
+            osc.stop(now + i * 0.095 + 0.44);
+          });
+        },
+
+        error() {
+          const ctx = this.ensure();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(195, now);
+          osc.frequency.linearRampToValueAtTime(135, now + 0.12);
+          g.gain.setValueAtTime(0.065, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        },
+      };
+
+      const haptics = {
+        enabled: true,
+        pulse(pattern) {
+          if (!this.enabled) return;
+          try {
+            if (navigator && typeof navigator.vibrate === 'function') {
+              navigator.vibrate(pattern);
+            }
+          } catch (e) {}
+        },
+        tap() { this.pulse(10); },
+        clack() { this.pulse([16, 20, 10]); },
+        error() { this.pulse([28, 30, 28]); },
+        win() { this.pulse([25, 40, 25, 40, 45]); },
+      };
+
+      // ======================================================================
+      // 4. STRICTLY SEPARATED STATE STORE (publicState / privateState / uiState)
+      // ======================================================================
+      const store = {
+        // PUBLIC STATE: Broadcasted to Tablet & Players (ZERO private tiles!)
+        publicState: {
+          room: null,
+          players: [],
+          lastPlacedTileId: null,
+          lastBoardLen: 0,
+          lastStatus: null,
+          lastActionStamp: null,
+          elapsedSeconds: 0,
+        },
+
+        // PRIVATE STATE: Strictly populated ONLY when uiState.role === 'PLAYER'
+        privateState: {
+          activePlayerId: null,
+          tiles: [],
+          validMoves: {}, // { [tileId]: { canLeft, canRight } }
+          isMyTurn: false,
+          canDraw: false,
+          canPass: false,
+          selectedTileId: null,
+          selectedEnd: null,
+        },
+
+        // LOCAL UI & SESSION STATE
+        uiState: {
+          lang: 'ar',
+          screen: 'LANDING', // LANDING | CREATE_ROOM | JOIN_ROOM | WAITING_ROOM | TABLE_BOARD | PLAYER_SCREEN | ROUND_RESULTS | MATCH_RESULTS
+          landingTab: 'TABLE', // 'TABLE' | 'PLAYER'
+          role: 'TABLE', // 'TABLE' | 'PLAYER'
+          hostToken: null,
+          localPlayers: {}, // { [playerId]: { id, name, seatIndex, token, isBot } }
+          savedSession: null,
+          createDraft: { maxPlayers: 4, targetScore: 101, tieRule: 'no_points' },
+          joinDraft: { code: '', name: '', error: '' },
+          loading: false,
+          actionBusy: false,
+          botThinking: false,
+          settingsOpen: false,
+          simOpen: false,
+          confirmHomeOpen: false,
+          isDisconnected: false,
+          reconnecting: false,
+          realtimeStatus: 'IDLE',
+          soundEnabled: true,
+          hapticsEnabled: true,
+          autoBot: true,
+        },
+      };
+
+      // ======================================================================
+      // 5. PAYLOAD NORMALIZERS
+      // ======================================================================
+      function normTile(t) {
+        if (!t) return null;
+        const left = Number(t.left ?? t.leftVal ?? t.a ?? 0);
+        const right = Number(t.right ?? t.rightVal ?? t.b ?? 0);
+        const id = t.id || `${Math.min(left, right)}-${Math.max(left, right)}`;
+        const isDouble = t.isDouble !== undefined ? Boolean(t.isDouble) : (t.is_double !== undefined ? Boolean(t.is_double) : left === right);
+        return { id, left, right, a: left, b: right, isDouble, playedBySeat: t.playedBySeat ?? t.played_by_seat ?? null };
+      }
+
+      function normRoom(r) {
+        if (!r) return null;
+        const board = Array.isArray(r.board) ? r.board.map(normTile) : [];
+        const ts = r.team_scores || r.teamScores || {};
+        return {
+          id: r.id,
+          code: String(r.code || r.room_code || '').toUpperCase(),
+          status: String(r.status || 'waiting').toLowerCase(),
+          maxPlayers: Number(r.max_players ?? r.maxPlayers ?? 4),
+          targetScore: Number(r.target_score ?? r.targetScore ?? 101),
+          tieRule: r.tie_rule || r.tieRule || 'no_points',
+          roundNumber: Number(r.round_number ?? r.roundNumber ?? 1),
+          board,
+          leftEnd: r.left_end ?? r.leftEnd ?? (board.length ? board[0].left : null),
+          rightEnd: r.right_end ?? r.rightEnd ?? (board.length ? board[board.length - 1].right : null),
+          drawPileCount: Number(r.draw_pile_count ?? r.drawPileCount ?? 0),
+          currentTurnSeat: r.current_turn_seat ?? r.currentTurnSeat ?? null,
+          currentTurnPlayerId: r.current_turn_player_id || r.currentTurnPlayerId || null,
+          teamScores: {
+            A: Number(ts.A ?? ts.a ?? r.team_a_score ?? 0),
+            B: Number(ts.B ?? ts.b ?? r.team_b_score ?? 0),
+          },
+          lastAction: r.last_action || r.lastAction || null,
+          roundResult: r.round_result || r.roundResult || null,
+        };
+      }
+
+      function normPlayer(p, idx) {
+        const seatIndex = Number(p.seat_index ?? p.seatIndex ?? idx);
+        return {
+          id: p.id,
+          name: p.name || p.player_name || `Player ${seatIndex + 1}`,
+          seatIndex,
+          team: p.team || null,
+          tileCount: Number(p.tile_count ?? p.tiles_count ?? p.tileCount ?? 0),
+          score: Number(p.score ?? 0),
+          isReady: Boolean(p.is_ready ?? p.isReady ?? false),
+          isConnected: p.is_connected !== undefined ? Boolean(p.is_connected) : (p.isConnected !== undefined ? Boolean(p.isConnected) : true),
+          isBot: Boolean(p.is_bot ?? p.isBot ?? false),
+        };
+      }
+
+      function applyPrivateHandPayload(raw) {
+        if (!raw) return;
+        const tiles = Array.isArray(raw.tiles) ? raw.tiles.map(normTile) : [];
+        const isMyTurn = Boolean(raw.isMyTurn ?? raw.is_my_turn ?? false);
+        const canDraw = Boolean(raw.canDraw ?? raw.can_draw ?? false);
+        const canPass = Boolean(raw.canPass ?? raw.can_pass ?? false);
+
+        const validMoves = {};
+        const vm = raw.validMoves ?? raw.valid_moves;
+        if (Array.isArray(vm)) {
+          vm.forEach((m) => {
+            const tid = m.tileId || m.tile_id || m.id;
+            if (!tid) return;
+            if (Array.isArray(m.ends)) {
+              validMoves[tid] = {
+                canLeft: m.ends.includes('left') || m.ends.includes('LEFT'),
+                canRight: m.ends.includes('right') || m.ends.includes('RIGHT'),
+              };
+            } else {
+              validMoves[tid] = {
+                canLeft: Boolean(m.canLeft ?? m.left),
+                canRight: Boolean(m.canRight ?? m.right),
+              };
+            }
+          });
+        } else if (vm && typeof vm === 'object') {
+          Object.keys(vm).forEach((tid) => {
+            const entry = vm[tid];
+            if (Array.isArray(entry)) {
+              validMoves[tid] = { canLeft: entry.includes('left'), canRight: entry.includes('right') };
+            } else if (entry && typeof entry === 'object') {
+              validMoves[tid] = { canLeft: Boolean(entry.canLeft ?? entry.left), canRight: Boolean(entry.canRight ?? entry.right) };
+            }
+          });
+        }
+
+        store.privateState.tiles = tiles;
+        store.privateState.validMoves = validMoves;
+        store.privateState.isMyTurn = isMyTurn;
+        store.privateState.canDraw = canDraw;
+        store.privateState.canPass = canPass;
+
+        if (!isMyTurn || !tiles.some((x) => x.id === store.privateState.selectedTileId)) {
+          store.privateState.selectedTileId = null;
+          store.privateState.selectedEnd = null;
+        }
+      }
+
+      function wipePrivateState() {
+        store.privateState.tiles = [];
+        store.privateState.validMoves = {};
+        store.privateState.isMyTurn = false;
+        store.privateState.canDraw = false;
+        store.privateState.canPass = false;
+        store.privateState.selectedTileId = null;
+        store.privateState.selectedEnd = null;
+      }
+
+      // ======================================================================
+      // 6. MODULAR LIVE SUPABASE SERVICES (ALL 14 RPCs + REALTIME + FALLBACK)
+      // ======================================================================
+      const roomService = {
+        async createRoom(maxPlayers, targetScore, tieRule) {
+          const { data, error } = await supabaseClient.rpc('create_room', {
+            p_max_players: maxPlayers,
+            p_target_score: targetScore,
+            p_tie_rule: tieRule,
+          });
+          if (error) throw error;
+          return {
+            room: normRoom(data.room || data),
+            hostToken: data.hostToken || data.host_token,
+          };
+        },
+
+        async getRoomState(roomCode) {
+          const { data, error } = await supabaseClient.rpc('get_room_state', {
+            p_room_code: String(roomCode).trim().toUpperCase(),
+          });
+          if (error) throw error;
+          const room = normRoom(data.room || data);
+          const players = (Array.isArray(data.players) ? data.players : [])
+            .map(normPlayer)
+            .sort((a, b) => a.seatIndex - b.seatIndex);
+          return { room, players };
+        },
+
+        async updateSettings(roomCode, hostToken, { maxPlayers, targetScore, tieRule }) {
+          const { data, error } = await supabaseClient.rpc('update_room_settings', {
+            p_room_code: roomCode,
+            p_host_token: hostToken,
+            p_max_players: maxPlayers,
+            p_target_score: targetScore,
+            p_tie_rule: tieRule,
+          });
+          if (error) throw error;
+          return data;
+        },
+      };
+
+      const playerService = {
+        async joinRoom(roomCode, playerName, isBot = false) {
+          const { data, error } = await supabaseClient.rpc('join_room', {
+            p_room_code: String(roomCode).trim().toUpperCase(),
+            p_player_name: String(playerName).trim(),
+            p_is_bot: Boolean(isBot),
+          });
+          if (error) throw error;
+          return {
+            room: normRoom(data.room),
+            player: normPlayer(data.player, 0),
+            playerToken: data.playerToken || data.player_token,
+          };
+        },
+
+        async getPlayerHand(roomCode, playerId, playerToken) {
+          const { data, error } = await supabaseClient.rpc('get_player_hand', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async toggleReady(roomCode, playerId, playerToken) {
+          const { data, error } = await supabaseClient.rpc('toggle_player_ready', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async setConnection(roomCode, playerId, playerToken, connected) {
+          const { data, error } = await supabaseClient.rpc('set_player_connection', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+            p_connected: Boolean(connected),
+          });
+          if (error) throw error;
+          return data;
+        },
+      };
+
+      const gameService = {
+        async startGame(roomCode, hostToken) {
+          const { data, error } = await supabaseClient.rpc('start_game', {
+            p_room_code: roomCode,
+            p_host_token: hostToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async playTile(roomCode, playerId, playerToken, tileId, end) {
+          const { data, error } = await supabaseClient.rpc('play_tile', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+            p_tile_id: tileId,
+            p_end: String(end).toLowerCase(),
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async drawTile(roomCode, playerId, playerToken) {
+          const { data, error } = await supabaseClient.rpc('draw_tile', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async passTurn(roomCode, playerId, playerToken) {
+          const { data, error } = await supabaseClient.rpc('pass_turn', {
+            p_room_code: roomCode,
+            p_player_id: playerId,
+            p_player_token: playerToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async playBotTurn(roomCode, hostToken) {
+          const { data, error } = await supabaseClient.rpc('play_bot_turn', {
+            p_room_code: roomCode,
+            p_host_token: hostToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async startNextRound(roomCode, hostToken) {
+          const { data, error } = await supabaseClient.rpc('start_next_round', {
+            p_room_code: roomCode,
+            p_host_token: hostToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+
+        async rematch(roomCode, hostToken) {
+          const { data, error } = await supabaseClient.rpc('rematch_game', {
+            p_room_code: roomCode,
+            p_host_token: hostToken,
+          });
+          if (error) throw error;
+          return data;
+        },
+      };
+
+      const realtimeService = {
+        channel: null,
+        roomId: null,
+        fallbackInterval: null,
+
+        subscribe(roomId, onUpdate) {
+          if (this.roomId === roomId && this.channel) return;
+          this.unsubscribe();
+          this.roomId = roomId;
+
+          this.channel = supabaseClient
+            .channel(`domino-live-${roomId}`)
+            .on(
+              'postgres_changes',
+              { event: '*', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` },
+              () => onUpdate('rooms')
+            )
+            .on(
+              'postgres_changes',
+              { event: '*', schema: 'public', table: 'room_players', filter: `room_id=eq.${roomId}` },
+              () => onUpdate('room_players')
+            )
+            .subscribe((status) => {
+              store.uiState.realtimeStatus = status;
+              if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                store.uiState.isDisconnected = true;
+                renderModals();
+              }
+              renderTopBar();
+            });
+
+          // Lightweight 4s fallback poll ONLY when Realtime is NOT SUBSCRIBED
+          this.fallbackInterval = setInterval(() => {
+            if (
+              store.publicState.room &&
+              store.uiState.realtimeStatus !== 'SUBSCRIBED' &&
+              !store.uiState.isDisconnected
+            ) {
+              onUpdate('fallback_poll');
+            }
+          }, 4000);
+        },
+
+        unsubscribe() {
+          if (this.fallbackInterval) {
+            clearInterval(this.fallbackInterval);
+            this.fallbackInterval = null;
+          }
+          if (this.channel) {
+            try { supabaseClient.removeChannel(this.channel); } catch (e) {}
+            this.channel = null;
+          }
+          this.roomId = null;
+          store.uiState.realtimeStatus = 'IDLE';
+        },
+      };
+
+      // ======================================================================
+      // 7. HELPERS, SESSION PERSISTENCE & GOLDEN CONFETTI CANVAS
+      // ======================================================================
+      let roundTimerId = null;
+      let autoBotTimerId = null;
+      let syncDebounceId = null;
+      let toastTimerId = null;
+      let confettiAnimId = null;
+
+      function t(key) {
+        return (DICT[store.uiState.lang] && DICT[store.uiState.lang][key]) || DICT.ar[key] || key;
+      }
+
+      function esc(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function copyText(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.pointerEvents = 'none';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+
+      function applyDir() {
+        document.documentElement.lang = store.uiState.lang;
+        document.documentElement.dir = store.uiState.lang === 'ar' ? 'rtl' : 'ltr';
+      }
+
+      function savePrefs() {
+        try {
+          localStorage.setItem(STORAGE_PREFS, JSON.stringify({
+            lang: store.uiState.lang,
+            soundEnabled: store.uiState.soundEnabled,
+            hapticsEnabled: store.uiState.hapticsEnabled,
+            autoBot: store.uiState.autoBot,
+          }));
+        } catch (e) {}
+      }
+
+      function loadPrefs() {
+        try {
+          const raw = localStorage.getItem(STORAGE_PREFS);
+          if (raw) {
+            const p = JSON.parse(raw);
+            if (p.lang === 'ar' || p.lang === 'en') store.uiState.lang = p.lang;
+            if (typeof p.soundEnabled === 'boolean') store.uiState.soundEnabled = p.soundEnabled;
+            if (typeof p.hapticsEnabled === 'boolean') store.uiState.hapticsEnabled = p.hapticsEnabled;
+            if (typeof p.autoBot === 'boolean') store.uiState.autoBot = p.autoBot;
+          }
+        } catch (e) {}
+        audioEngine.enabled = store.uiState.soundEnabled;
+        haptics.enabled = store.uiState.hapticsEnabled;
+        applyDir();
+      }
+
+      function saveSession() {
+        if (!store.publicState.room?.code) return;
+        const data = {
+          roomCode: store.publicState.room.code,
+          hostToken: store.uiState.hostToken,
+          role: store.uiState.role,
+          activePlayerId: store.privateState.activePlayerId,
+          localPlayers: store.uiState.localPlayers,
+        };
+        store.uiState.savedSession = data;
+        try { localStorage.setItem(STORAGE_SESSION, JSON.stringify(data)); } catch (e) {}
+      }
+
+      function loadSession() {
+        try {
+          const raw = localStorage.getItem(STORAGE_SESSION);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function clearSession() {
+        realtimeService.unsubscribe();
+        stopRoundTimer();
+        stopConfetti();
+        store.publicState = {
+          room: null,
+          players: [],
+          lastPlacedTileId: null,
+          lastBoardLen: 0,
+          lastStatus: null,
+          lastActionStamp: null,
+          elapsedSeconds: 0,
+        };
+        store.privateState.activePlayerId = null;
+        wipePrivateState();
+        store.uiState.hostToken = null;
+        store.uiState.localPlayers = {};
+        store.uiState.savedSession = null;
+        store.uiState.isDisconnected = false;
+        store.uiState.botThinking = false;
+        try { localStorage.removeItem(STORAGE_SESSION); } catch (e) {}
+      }
+
+      function showToast(msg, tone = 'info') {
+        const el = document.getElementById('toast-root');
+        if (!el) return;
+        if (toastTimerId) clearTimeout(toastTimerId);
+        const style =
+          tone === 'danger'
+            ? 'bg-[#D95C5C] text-white border-white/25'
+            : tone === 'gold'
+            ? 'bg-[#D6B56D] text-[#0F352B] border-[#F5F0E5]/50'
+            : 'bg-[#17463A] text-white border-[#D6B56D]/60';
+        el.innerHTML = `<div class="anim-toast px-4 py-1.5 rounded-full text-xs font-extrabold shadow-xl border whitespace-nowrap ${style}">${esc(msg)}</div>`;
+        toastTimerId = setTimeout(() => { el.innerHTML = ''; }, 2400);
+      }
+
+      function friendlyError(err) {
+        const msg = String(err?.message || err?.details || err || '').toUpperCase();
+        if (msg.includes('NOT_FOUND') || msg.includes('NOT FOUND')) return t('errNotFound');
+        if (msg.includes('FULL')) return t('errFull');
+        if (msg.includes('STARTED') || msg.includes('ALREADY')) return t('errStarted');
+        return err?.message || t('errGeneral');
+      }
+
+      function getTurnPlayer() {
+        const room = store.publicState.room;
+        const players = store.publicState.players;
+        if (!room || !players.length) return null;
+        if (room.currentTurnPlayerId) {
+          const p = players.find((x) => x.id === room.currentTurnPlayerId);
+          if (p) return p;
+        }
+        if (room.currentTurnSeat !== null && room.currentTurnSeat !== undefined) {
+          return players.find((x) => x.seatIndex === room.currentTurnSeat) || null;
+        }
+        return null;
+      }
+
+      function getInviteUrl(code) {
+        const base = window.location.origin === 'null' ? '' : (window.location.origin + window.location.pathname);
+        return base ? `${base}?join=${encodeURIComponent(code)}` : `?join=${encodeURIComponent(code)}`;
+      }
+
+      function fmtTimer(sec) {
+        return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+      }
+
+      function startRoundTimer() {
+        stopRoundTimer();
+        roundTimerId = setInterval(() => {
+          if (store.publicState.room?.status === 'playing') {
+            store.publicState.elapsedSeconds += 1;
+            const el = document.getElementById('hud-timer');
+            if (el) el.textContent = fmtTimer(store.publicState.elapsedSeconds);
+          }
+        }, 1000);
+      }
+
+      function stopRoundTimer() {
+        if (roundTimerId) {
+          clearInterval(roundTimerId);
+          roundTimerId = null;
+        }
+      }
+
+      // Responsive Golden Confetti Canvas for Match Results
+      function startConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        if (!canvas) return;
+        stopConfetti();
+        canvas.classList.remove('hidden');
+        const ctx = canvas.getContext('2d');
+        const resize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+        canvas._onResize = resize;
+
+        const colors = ['#D6B56D', '#F5F0E5', '#E8CE8E', '#34D399', '#C8A352'];
+        const particles = Array.from({ length: 85 }).map(() => ({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * canvas.height * 0.6,
+          w: 6 + Math.random() * 6,
+          h: 4 + Math.random() * 4,
+          vx: (Math.random() - 0.5) * 2.2,
+          vy: 2.2 + Math.random() * 3.4,
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.16,
+          color: colors[Math.floor(Math.random() * colors.length)],
+        }));
+
+        const loop = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vrot;
+            if (p.y > canvas.height + 20) {
+              p.y = -15;
+              p.x = Math.random() * canvas.width;
+            }
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+          confettiAnimId = requestAnimationFrame(loop);
+        };
+        confettiAnimId = requestAnimationFrame(loop);
+      }
+
+      function stopConfetti() {
+        if (confettiAnimId) {
+          cancelAnimationFrame(confettiAnimId);
+          confettiAnimId = null;
+        }
+        const canvas = document.getElementById('confetti-canvas');
+        if (canvas) {
+          if (canvas._onResize) window.removeEventListener('resize', canvas._onResize);
+          canvas.classList.add('hidden');
+        }
+      }
+
+      // ======================================================================
+      // 8. LIVE STATE SYNC & AUTO-BOT CONTROLLER
+      // ======================================================================
+      function screenForCurrentRoom() {
+        const r = store.publicState.room;
+        if (!r) return 'LANDING';
+        if (r.status === 'waiting') return 'WAITING_ROOM';
+        if (r.status === 'round_end') return 'ROUND_RESULTS';
+        if (r.status === 'match_end') return 'MATCH_RESULTS';
+        return store.uiState.role === 'TABLE' ? 'TABLE_BOARD' : 'PLAYER_SCREEN';
+      }
+
+      function scheduleAutoBot() {
+        if (autoBotTimerId) clearTimeout(autoBotTimerId);
+        const room = store.publicState.room;
+        if (!store.uiState.autoBot || !store.uiState.hostToken || store.uiState.role !== 'TABLE' || room?.status !== 'playing') {
+          if (store.uiState.botThinking) {
+            store.uiState.botThinking = false;
+            renderApp();
+          }
+          return;
+        }
+        const tp = getTurnPlayer();
+        if (!tp || !tp.isBot) {
+          store.uiState.botThinking = false;
+          return;
+        }
+
+        store.uiState.botThinking = true;
+        renderApp();
+
+        autoBotTimerId = setTimeout(async () => {
+          const curRoom = store.publicState.room;
+          const curTp = getTurnPlayer();
+          if (!store.uiState.autoBot || !store.uiState.hostToken || store.uiState.role !== 'TABLE' || curRoom?.status !== 'playing' || !curTp?.isBot) {
+            store.uiState.botThinking = false;
+            return;
+          }
+          try {
+            await gameService.playBotTurn(curRoom.code, store.uiState.hostToken);
+          } catch (e) {
+            console.warn('Auto-bot skipped:', e);
+          } finally {
+            store.uiState.botThinking = false;
+          }
+        }, 1100);
+      }
+
+      async function syncLiveState({ navigate = true } = {}) {
+        const code = store.publicState.room?.code || store.uiState.savedSession?.roomCode;
+        if (!code) return;
+
+        try {
+          const { room, players } = await roomService.getRoomState(code);
+          const prevStatus = store.publicState.lastStatus;
+          const prevLen = store.publicState.lastBoardLen;
+          const prevStamp = store.publicState.lastActionStamp;
+
+          if (room.board.length > prevLen) {
+            const end = String(room.lastAction?.end || room.lastAction?.side || 'right').toLowerCase();
+            const newest = end === 'left' ? room.board[0] : room.board[room.board.length - 1];
+            store.publicState.lastPlacedTileId = newest ? newest.id : null;
+          } else if (room.board.length === 0) {
+            store.publicState.lastPlacedTileId = null;
+          }
+
+          store.publicState.room = room;
+          store.publicState.players = players;
+          store.publicState.lastBoardLen = room.board.length;
+          store.publicState.lastStatus = room.status;
+
+          // Action sound & toast feedback
+          const act = room.lastAction;
+          const stamp = act ? (act.timestamp || act.at || JSON.stringify(act)) : null;
+          if (act && stamp && prevStamp !== null && stamp !== prevStamp) {
+            const kind = String(act.type || '').toLowerCase();
+            const who = act.playerName || act.player_name || '';
+            if (kind.includes('play')) {
+              audioEngine.clack();
+              haptics.clack();
+              const tileStr = act.tile ? `${act.tile.left ?? act.tile.a ?? ''}|${act.tile.right ?? act.tile.b ?? ''}` : '';
+              if (who) showToast(`${who} ${t('actPlayed')} ${tileStr}`, 'info');
+            } else if (kind.includes('draw')) {
+              audioEngine.drawSwoosh();
+              if (who) showToast(`${who} ${t('actDrew')}`, 'info');
+            } else if (kind.includes('pass')) {
+              audioEngine.tap();
+              if (who) showToast(`${who} ${t('actPassed')}`, 'info');
+            }
+          }
+          store.publicState.lastActionStamp = stamp;
+
+          // Status transitions
+          if (prevStatus !== room.status) {
+            if (room.status === 'playing') {
+              stopConfetti();
+              store.publicState.elapsedSeconds = 0;
+              startRoundTimer();
+              audioEngine.turnChime();
+            } else if (room.status === 'round_end') {
+              stopRoundTimer();
+              audioEngine.winChord();
+              haptics.win();
+            } else if (room.status === 'match_end') {
+              stopRoundTimer();
+              audioEngine.winChord();
+              haptics.win();
+              startConfetti();
+            } else {
+              stopRoundTimer();
+              stopConfetti();
+            }
+          } else if (room.status === 'playing' && !roundTimerId) {
+            startRoundTimer();
+          }
+
+          // STRICT PRIVACY: Fetch private hand ONLY in PLAYER mode
+          if (store.uiState.role === 'PLAYER' && store.privateState.activePlayerId) {
+            const localRec = store.uiState.localPlayers[store.privateState.activePlayerId];
+            if (localRec?.token && room.status === 'playing') {
+              const wasMyTurn = store.privateState.isMyTurn;
+              const handPayload = await playerService.getPlayerHand(room.code, store.privateState.activePlayerId, localRec.token);
+              applyPrivateHandPayload(handPayload);
+              if (store.privateState.isMyTurn && !wasMyTurn) {
+                audioEngine.turnChime();
+                haptics.tap();
+                showToast(t('yourTurn'), 'gold');
+              }
+            } else {
+              wipePrivateState();
+            }
+          } else {
+            // TABLET MODE: Never fetch or retain private tiles
+            wipePrivateState();
+          }
+
+          // Subscribe to Realtime changes
+          realtimeService.subscribe(room.id, () => {
+            if (syncDebounceId) clearTimeout(syncDebounceId);
+            syncDebounceId = setTimeout(() => syncLiveState({ navigate: true }), 90);
+          });
+
+          if (navigate && !['LANDING', 'CREATE_ROOM', 'JOIN_ROOM'].includes(store.uiState.screen)) {
+            store.uiState.screen = screenForCurrentRoom();
+          }
+
+          saveSession();
+          renderApp();
+          scheduleAutoBot();
+        } catch (err) {
+          console.error('syncLiveState error:', err);
+          if (String(err?.message || '').toUpperCase().includes('NOT_FOUND')) {
+            clearSession();
+            store.uiState.screen = 'LANDING';
+            renderApp();
+          }
+        }
+      }
+
+      // ======================================================================
+      // 9. GRAPHICAL COMPONENTS (PIPS, 3D DOMINOES, QR CODE, SEATS, CHAIN)
+      // ======================================================================
+      const PIP_MAP = {
+        0: [],
+        1: [[50, 50]],
+        2: [[26, 26], [74, 74]],
+        3: [[26, 26], [50, 50], [74, 74]],
+        4: [[26, 26], [74, 26], [26, 74], [74, 74]],
+        5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]],
+        6: [[26, 22], [74, 22], [26, 50], [74, 50], [26, 78], [74, 78]],
+      };
+
+      function pipSvg(val) {
+        const dots = (PIP_MAP[Number(val)] || [])
+          .map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="10.8" fill="#20231F" />`)
+          .join('');
+        return `<svg viewBox="0 0 100 100" class="w-full h-full block" aria-hidden="true">${dots}</svg>`;
+      }
+
+      function dominoHtml({ id = '', left = 0, right = 0, orientation = 'horizontal', size = 'md', playable = false, selected = false, dimmed = false, isNew = false, interactive = false }) {
+        const horiz = orientation === 'horizontal';
+        const dimMap = {
+          xs: horiz ? 'w-11 h-6' : 'w-6 h-11',
+          sm: horiz ? 'w-14 h-7 sm:w-16 sm:h-8' : 'w-7 h-14 sm:w-8 sm:h-16',
+          md: horiz ? 'w-[64px] h-[33px] sm:w-[76px] sm:h-[38px]' : 'w-[33px] h-[64px] sm:w-[38px] sm:h-[76px]',
+          lg: horiz ? 'w-24 h-12' : 'w-[58px] h-[112px]',
+        };
+        const divider = horiz
+          ? 'w-[1.5px] h-[72%] bg-[#20231F]/28 rounded-full shrink-0'
+          : 'h-[1.5px] w-[72%] bg-[#20231F]/28 rounded-full shrink-0';
+
+        const cls = [
+          'domino-tile',
+          horiz ? 'flex-row' : 'flex-col',
+          dimMap[size] || dimMap.md,
+          playable ? 'playable' : '',
+          selected ? 'selected' : '',
+          dimmed ? 'dimmed' : '',
+          isNew ? 'anim-tile-drop' : '',
+        ].filter(Boolean).join(' ');
+
+        const tag = interactive ? 'button' : 'div';
+        const attrs = interactive
+          ? `type="button" data-action="select-tile" data-tile-id="${esc(id)}" aria-label="Domino ${left}-${right}"`
+          : `aria-label="Domino ${left}-${right}"`;
+
+        return `
+          <${tag} ${attrs} class="${cls}">
+            ${isNew ? '<span class="domino-impact-ring"></span>' : ''}
+            <div class="flex-1 w-full h-full flex items-center justify-center p-0.5">${pipSvg(left)}</div>
+            <div class="${divider}"></div>
+            <div class="flex-1 w-full h-full flex items-center justify-center p-0.5">${pipSvg(right)}</div>
+          </${tag}>
+        `;
+      }
+
+      /**
+       * Scannable QR Code using `qrcode-generator` CDN (with clean SVG styling)
+       */
+      function renderQrCode(text, pxSize = 128) {
+        try {
+          if (typeof window.qrcode === 'function') {
+            const qr = window.qrcode(0, 'M');
+            qr.addData(text);
+            qr.make();
+            const count = qr.getModuleCount();
+            let rects = '';
+            for (let r = 0; r < count; r++) {
+              for (let c = 0; c < count; c++) {
+                if (qr.isDark(r, c)) {
+                  rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#0F352B" />`;
+                }
+              }
+            }
+            return `
+              <div class="bg-[#F5F0E5] p-2.5 rounded-2xl shadow-lg inline-flex items-center justify-center border border-[#D6B56D]/50">
+                <svg viewBox="0 0 ${count} ${count}" width="${pxSize}" height="${pxSize}" shape-rendering="crispEdges">
+                  <rect width="${count}" height="${count}" fill="#F5F0E5" />
+                  ${rects}
+                </svg>
+              </div>
+            `;
+          }
+        } catch (e) {
+          console.warn('QR generation fallback:', e);
+        }
+        return `<div class="bg-[#F5F0E5] text-[#0F352B] font-mono font-black px-4 py-6 rounded-2xl text-sm">${esc(text)}</div>`;
+      }
+
+      function getSeatPlayer(pos) {
+        const room = store.publicState.room;
+        const players = store.publicState.players;
+        if (!room || !players.length) return null;
+        let idx = -1;
+        if (room.maxPlayers === 2) {
+          if (pos === 'BOTTOM') idx = 0;
+          if (pos === 'TOP') idx = 1;
+        } else if (room.maxPlayers === 3) {
+          if (pos === 'BOTTOM') idx = 0;
+          if (pos === 'LEFT') idx = 1;
+          if (pos === 'TOP') idx = 2;
+        } else {
+          if (pos === 'BOTTOM') idx = 0;
+          if (pos === 'RIGHT') idx = 1;
+          if (pos === 'TOP') idx = 2;
+          if (pos === 'LEFT') idx = 3;
+        }
+        return players.find((p) => p.seatIndex === idx) || null;
+      }
+
+      function renderSeatBadge(player, pos) {
+        if (!player) return '';
+        const room = store.publicState.room;
+        const tp = getTurnPlayer();
+        const isTurn = tp && tp.id === player.id;
+        const is4P = room.maxPlayers === 4;
+        const team = player.team || (player.seatIndex % 2 === 0 ? 'A' : 'B');
+        const horiz = pos === 'TOP' || pos === 'BOTTOM';
+        const initials = esc(player.name.trim().slice(0, 2).toUpperCase());
+
+        const backs = Array.from({ length: Math.min(player.tileCount, 4) })
+          .map(() => `<div class="w-1.5 h-3 rounded-[2px] bg-[#F5F0E5] border border-[#20231F]/40"></div>`)
+          .join('');
+
+        return `
+          <div class="relative flex ${horiz ? 'flex-row items-center gap-2.5 px-3 py-1.5' : 'flex-col items-center gap-1.5 px-2.5 py-2'} rounded-2xl transition-all ${
+            isTurn
+              ? 'bg-[#17463A] border border-[#D6B56D] anim-turn-halo'
+              : 'bg-[#11392F]/92 border border-[#235547]'
+          }">
+            ${!player.isConnected ? `
+              <span class="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-[#D95C5C] text-white text-[9px] font-bold whitespace-nowrap shadow">
+                ${t('offline')}
+              </span>
+            ` : isTurn ? `
+              <span class="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#D6B56D] text-[#0F352B] text-[9px] font-black whitespace-nowrap shadow">
+                ${store.uiState.botThinking && player.isBot ? t('botThinking') : t('turnOf')}
+              </span>
+            ` : ''}
+
+            <div class="relative shrink-0">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs ${
+                isTurn ? 'bg-[#D6B56D] text-[#0F352B]' : 'bg-[#1A4B3E] text-[#F5F0E5] border border-[#2A6152]'
+              }">
+                ${initials}
+              </div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#11392F] ${
+                player.isConnected ? 'bg-emerald-400' : 'bg-[#D95C5C]'
+              }"></span>
+            </div>
+
+            <div class="flex flex-col ${horiz ? 'items-start' : 'items-center text-center'}">
+              <div class="flex items-center gap-1">
+                <span class="font-bold text-xs text-white max-w-[90px] truncate">${esc(player.name)}</span>
+                ${player.isBot ? `<span class="text-[9px] font-bold px-1 rounded bg-[#0C2B23] text-[#B7C9C1] border border-[#235547]">${t('bot')}</span>` : ''}
+                ${is4P ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded ${team === 'A' ? 'bg-[#D6B56D]/20 text-[#D6B56D]' : 'bg-[#1A5142] text-[#B7C9C1]'}">${team === 'A' ? t('teamA') : t('teamB')}</span>` : ''}
+              </div>
+              ${!is4P ? `<span class="text-[10px] text-[#B7C9C1] font-semibold">${player.score} ${t('pts')}</span>` : ''}
+            </div>
+
+            <!-- Tile count only (STRICT PRIVACY: NEVER show player tile faces) -->
+            <div class="flex items-center gap-1.5 bg-[#0C2B23] px-2 py-1 rounded-xl border border-[#235547] shrink-0">
+              <div class="flex -space-x-0.5 rtl:space-x-reverse">${backs}</div>
+              <span class="text-xs font-black text-white tabular-nums">${player.tileCount}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDrawPile() {
+        const room = store.publicState.room;
+        // STRICT RULE: Completely hidden in 4-player mode
+        if (!room || room.maxPlayers === 4) return '';
+        const count = room.drawPileCount;
+        const stack = count === 0
+          ? `<div class="w-10 h-5 rounded border border-dashed border-[#2A6152] flex items-center justify-center text-[10px] text-[#B7C9C1]/60">0</div>`
+          : Array.from({ length: Math.min(count, 9) }).map((_, i) => `
+              <div style="margin-top:${i === 0 ? 0 : -12}px; z-index:${i + 1};" class="domino-back w-10 h-5 relative">
+                <div class="w-[70%] h-[68%] rounded-[2px] border border-[#D6B56D]/35 flex items-center justify-center">
+                  <div class="w-1 h-1 rounded-full bg-[#D6B56D]/75"></div>
+                </div>
+              </div>
+            `).join('');
+
+        return `
+          <div class="flex flex-col items-center justify-center gap-1.5 bg-[#11392F]/92 border border-[#235547] rounded-2xl px-2 py-2.5 shadow-lg min-w-[58px] shrink-0">
+            <span class="text-[10px] font-bold text-[#B7C9C1]">${t('drawPile')}</span>
+            <div class="flex flex-col items-center justify-center min-h-[82px] py-1">${stack}</div>
+            <div class="px-2 py-0.5 rounded-full bg-[#1A4B3E] border border-[#2A6152] text-[11px] font-black text-[#D6B56D] tabular-nums">
+              ${count}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderBoardChain() {
+        const room = store.publicState.room;
+        const board = room?.board || [];
+        if (board.length === 0) {
+          return `
+            <div class="flex flex-col items-center justify-center text-center gap-2.5 py-6 px-5 rounded-2xl border border-dashed border-[#2A6152] bg-[#0F352B]/60">
+              <div class="w-11 h-11 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-5 h-5 text-[#D6B56D]"></i>
+              </div>
+              <p class="text-xs font-semibold text-[#B7C9C1]">${t('emptyBoard')}</p>
+            </div>
+          `;
+        }
+
+        const perRow = window.innerWidth < 640 ? 5 : 7;
+        const rows = [];
+        for (let i = 0; i < board.length; i += perRow) {
+          rows.push(board.slice(i, i + perRow));
+        }
+
+        const size = board.length > 14 ? 'sm' : 'md';
+        const rowsHtml = rows.map((rowTiles, rIdx) => {
+          const rev = rIdx % 2 === 1;
+          const ordered = rev ? [...rowTiles].reverse() : rowTiles;
+          const tilesHtml = ordered.map((tile) =>
+            dominoHtml({
+              id: tile.id,
+              left: rev ? tile.right : tile.left,
+              right: rev ? tile.left : tile.right,
+              orientation: tile.isDouble ? 'vertical' : 'horizontal',
+              size,
+              isNew: tile.id === store.publicState.lastPlacedTileId,
+            })
+          ).join('');
+          return `<div class="flex items-center justify-center flex-wrap gap-1">${tilesHtml}</div>`;
+        }).join('');
+
+        return `
+          <div dir="ltr" class="w-full h-full flex flex-col items-center justify-center gap-2.5 p-1.5 overflow-auto no-scrollbar">
+            <div class="flex items-center gap-2.5 bg-[#11392F]/95 border border-[#D6B56D]/50 rounded-full px-3.5 py-1 text-xs shadow-lg shrink-0">
+              <span class="flex items-center gap-1 text-[#B7C9C1]">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                <strong class="text-white text-sm font-black tabular-nums">${room.leftEnd}</strong>
+              </span>
+              <span class="w-px h-3 bg-[#235547]"></span>
+              <span class="text-[11px] font-semibold text-[#B7C9C1]">${board.length} ${t('onBoard')}</span>
+              <span class="w-px h-3 bg-[#235547]"></span>
+              <span class="flex items-center gap-1 text-[#B7C9C1]">
+                <strong class="text-white text-sm font-black tabular-nums">${room.rightEnd}</strong>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+              </span>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-2 max-w-full">${rowsHtml}</div>
+          </div>
+        `;
+      }
+
+      // ======================================================================
+      // 10. TOP APP BAR & ALL 10 SCREENS + BOTTOM SHEETS
+      // ======================================================================
+      function renderTopBar() {
+        const bar = document.getElementById('app-topbar');
+        if (!bar) return;
+        const hasRoom = Boolean(store.publicState.room?.code);
+        const liveOk = store.uiState.realtimeStatus === 'SUBSCRIBED' && !store.uiState.isDisconnected;
+
+        bar.innerHTML = `
+          <!-- Start side (RTL Right): Ivory 3D domino logo + title + live dot -->
+          <button type="button" data-action="brand-home" class="flex items-center gap-2.5 active:scale-95 transition-transform">
+            <div class="w-7 h-7 rounded-lg bg-[#F5F0E5] shadow-[0_3px_8px_rgba(0,0,0,0.45),inset_0_-2px_0_rgba(160,145,115,0.45)] flex items-center justify-center border border-[#DDD5C4]">
+              <div class="w-1.5 h-1.5 rounded-full bg-[#20231F]"></div>
+            </div>
+            <span class="font-extrabold text-[15px] sm:text-base text-white tracking-tight">${t('brand')}</span>
+            ${hasRoom ? `
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#17463A] border border-[#2A6152] text-[10px] font-bold ${liveOk ? 'text-emerald-300' : 'text-[#D6B56D]'}">
+                <span class="w-1.5 h-1.5 rounded-full ${liveOk ? 'bg-emerald-400 animate-pulse' : 'bg-[#D6B56D]'}"></span>
+                <span class="font-mono">${esc(store.publicState.room.code)}</span>
+              </span>
+            ` : ''}
+          </button>
+
+          <!-- End side (RTL Left): Device Simulator, Settings Gear, Language Pill -->
+          <div class="flex items-center gap-1.5">
+            <button type="button" data-action="open-sim" title="${t('simTitle')}" aria-label="${t('simTitle')}"
+              class="p-2 rounded-xl border transition-colors active:scale-95 ${
+                store.uiState.simOpen ? 'bg-[#1A4B3E] border-[#D6B56D] text-[#D6B56D]' : 'border-transparent hover:bg-[#17463A] text-[#B7C9C1] hover:text-white'
+              }">
+              <i data-lucide="monitor-smartphone" class="w-[18px] h-[18px]"></i>
+            </button>
+
+            <button type="button" data-action="open-settings" title="${t('settingsTitle')}" aria-label="${t('settingsTitle')}"
+              class="p-2 rounded-xl border transition-colors active:scale-95 ${
+                store.uiState.settingsOpen ? 'bg-[#1A4B3E] border-[#D6B56D] text-[#D6B56D]' : 'border-transparent hover:bg-[#17463A] text-[#B7C9C1] hover:text-white'
+              }">
+              <i data-lucide="settings" class="w-[18px] h-[18px]"></i>
+            </button>
+
+            <button type="button" data-action="toggle-lang"
+              class="inline-flex items-center gap-1.5 rounded-full bg-[#17463A] hover:bg-[#1E5648] border border-[#275A4C] px-3 py-1.5 text-xs font-bold text-white transition-colors active:scale-95">
+              <span>${t('langPill')}</span>
+              <i data-lucide="globe" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      // SCREEN 1: ONE-SCREEN NATIVE APP LANDING (ZERO PAGE SCROLL)
+      function renderLandingScreen() {
+        const dirArrow = store.uiState.lang === 'ar' ? 'arrow-left' : 'arrow-right';
+        const tab = store.uiState.landingTab;
+        const thumbStart = tab === 'TABLE' ? '4px' : 'calc(50%)';
+        const resumeCode = store.uiState.savedSession?.roomCode;
+        const jd = store.uiState.joinDraft;
+
+        return `
+          <div class="anim-view h-full w-full px-4 py-3 sm:py-5 flex flex-col items-center justify-center overflow-hidden">
+            <div class="w-full max-w-[440px] flex flex-col items-center gap-3 sm:gap-4">
+
+              <!-- Compact Hero Header (Matches Reference Screenshot) -->
+              <div class="text-center flex flex-col items-center gap-1 sm:gap-1.5 px-1">
+                <span class="text-[11px] sm:text-xs font-bold tracking-wide text-[#D6B56D]">${t('eyebrow')}</span>
+                <h1 class="text-2xl sm:text-[32px] font-black leading-[1.2] text-white">${t('heroTitle')}</h1>
+                <p class="text-[11px] sm:text-xs text-[#B7C9C1] max-w-[350px] leading-relaxed">${t('heroSub')}</p>
+              </div>
+
+              <!-- Optional Compact Resume Saved Room Chip -->
+              ${resumeCode ? `
+                <button type="button" data-action="resume-saved"
+                  class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#17463A]/95 hover:bg-[#1E584A] border border-[#D6B56D]/75 text-[11px] font-extrabold text-white shadow-md active:scale-95 transition-transform">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>${t('resumeChip')}:</span>
+                  <span class="font-mono text-[#D6B56D] tracking-widest">${esc(resumeCode)}</span>
+                  <i data-lucide="${dirArrow}" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                </button>
+              ` : ''}
+
+              <!-- Native App Segmented Mode Switcher Pill (الطاولة | اللاعب) -->
+              <div class="segmented-track w-full">
+                <div class="segmented-thumb" style="inset-inline-start: ${thumbStart};"></div>
+                <button type="button" data-action="set-landing-tab" data-tab="TABLE"
+                  class="relative z-10 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 transition-colors ${
+                    tab === 'TABLE' ? 'text-[#0F352B]' : 'text-[#B7C9C1] hover:text-white'
+                  }">
+                  <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                  <span>${t('tabTable')}</span>
+                </button>
+                <button type="button" data-action="set-landing-tab" data-tab="PLAYER"
+                  class="relative z-10 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 transition-colors ${
+                    tab === 'PLAYER' ? 'text-[#0F352B]' : 'text-[#B7C9C1] hover:text-white'
+                  }">
+                  <i data-lucide="smartphone" class="w-4 h-4"></i>
+                  <span>${t('tabPlayer')}</span>
+                </button>
+              </div>
+
+              <!-- Single Sleek Morphing App Card (Fits 100dvh with ZERO scroll) -->
+              <div class="anim-card-morph w-full rounded-3xl bg-[#11392F]/95 border border-[#235547] p-5 sm:p-6 shadow-[0_16px_38px_rgba(0,0,0,0.34)] flex flex-col gap-4 relative overflow-hidden">
+                <div class="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[#D6B56D]/45 to-transparent"></div>
+
+                ${tab === 'TABLE' ? `
+                  <!-- TAB 1: TABLE MODE (EXACT REFERENCE MATCH) -->
+                  <div class="flex flex-col gap-2.5 text-start">
+                    <div class="w-11 h-11 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center shadow-inner">
+                      <i data-lucide="layout-grid" class="w-5 h-5 text-[#D6B56D]"></i>
+                    </div>
+                    <div>
+                      <div class="text-[11px] font-bold text-[#D6B56D] mb-0.5">${t('tableLabel')}</div>
+                      <h2 class="text-2xl font-black text-white leading-tight">${t('tableTitle')}</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-[#B7C9C1] leading-relaxed">${t('tableDesc')}</p>
+                    <div class="flex items-center gap-2 pt-0.5 text-[11px] sm:text-xs text-[#B7C9C1]">
+                      <i data-lucide="shield-check" class="w-4 h-4 text-[#D6B56D] shrink-0"></i>
+                      <span>${t('privacyRow')}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-2.5 pt-1">
+                    <button type="button" data-action="go-create"
+                      class="btn-gold w-full py-3.5 px-5 rounded-xl text-sm sm:text-base flex items-center justify-center gap-2">
+                      <span>${t('createTableBtn')}</span>
+                      <i data-lucide="${dirArrow}" class="w-4 h-4"></i>
+                    </button>
+
+                    <button type="button" data-action="open-settings"
+                      class="w-full py-3 px-5 rounded-xl bg-[#143E33] hover:bg-[#194A3D] border border-[#26584A] text-white font-bold text-sm transition-all active:scale-[0.97] flex items-center justify-center gap-2">
+                      <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#D6B56D]"></i>
+                      <span>${t('settingsBtn')}</span>
+                    </button>
+                  </div>
+                ` : `
+                  <!-- TAB 2: PLAYER MODE (INLINE JOIN FORM) -->
+                  <div class="flex flex-col gap-2 text-start">
+                    <div class="w-11 h-11 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center shadow-inner">
+                      <i data-lucide="smartphone" class="w-5 h-5 text-[#D6B56D]"></i>
+                    </div>
+                    <div>
+                      <div class="text-[11px] font-bold text-[#D6B56D] mb-0.5">${t('playerLabel')}</div>
+                      <h2 class="text-2xl font-black text-white leading-tight">${t('playerTitle')}</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-[#B7C9C1] leading-relaxed">${t('playerDesc')}</p>
+                  </div>
+
+                  <form id="inline-join-form" class="flex flex-col gap-2.5">
+                    <input id="inline-code" type="text" maxlength="6" required autocomplete="off"
+                      value="${esc(jd.code)}"
+                      placeholder="${t('codePlaceholder')}"
+                      class="w-full px-4 py-3 rounded-xl bg-[#0C2B23] border border-[#235547] focus:border-[#D6B56D] focus:outline-none text-white font-mono text-base tracking-[0.2em] uppercase text-center placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:text-[#B7C9C1]/55" />
+
+                    <input id="inline-name" type="text" maxlength="18" required autocomplete="off"
+                      value="${esc(jd.name)}"
+                      placeholder="${t('namePlaceholder')}"
+                      class="w-full px-4 py-3 rounded-xl bg-[#0C2B23] border border-[#235547] focus:border-[#D6B56D] focus:outline-none text-white text-sm placeholder:text-[#B7C9C1]/55" />
+
+                    ${jd.error ? `
+                      <div class="px-3 py-2 rounded-xl bg-[#D95C5C]/15 border border-[#D95C5C]/45 text-[11px] text-[#ffd4d4] flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-[#D95C5C] shrink-0"></i>
+                        <span>${esc(jd.error)}</span>
+                      </div>
+                    ` : ''}
+
+                    <button type="submit" ${store.uiState.loading ? 'disabled' : ''}
+                      class="btn-gold w-full py-3.5 px-5 rounded-xl text-sm sm:text-base flex items-center justify-center gap-2 mt-0.5">
+                      ${store.uiState.loading
+                        ? `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>${t('joining')}</span>`
+                        : `<span>${t('joinBtn')}</span><i data-lucide="${dirArrow}" class="w-4 h-4"></i>`
+                      }
+                    </button>
+                  </form>
+                `}
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 2: CREATE ROOM
+      function renderCreateRoomScreen() {
+        const backIcon = store.uiState.lang === 'ar' ? 'arrow-right' : 'arrow-left';
+        const d = store.uiState.createDraft;
+
+        return `
+          <div class="anim-view h-full w-full px-4 py-3 flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-[480px] max-h-full overflow-y-auto no-scrollbar rounded-3xl bg-[#11392F]/95 border border-[#235547] p-5 sm:p-6 shadow-2xl flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <button type="button" data-action="go-landing" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#B7C9C1] hover:text-white active:scale-95">
+                  <i data-lucide="${backIcon}" class="w-4 h-4"></i>
+                  <span>${t('back')}</span>
+                </button>
+                <span class="text-[11px] font-bold text-[#D6B56D]">${t('tableLabel')}</span>
+              </div>
+
+              <div class="text-center">
+                <h2 class="text-xl sm:text-2xl font-black text-white">${t('createTitle')}</h2>
+                <p class="text-xs text-[#B7C9C1] mt-0.5">${t('createSub')}</p>
+              </div>
+
+              <!-- Player Count -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-[#B7C9C1]">${t('playerCount')}</label>
+                <div class="grid grid-cols-3 gap-2">
+                  ${[
+                    { n: 2, label: t('p2'), sub: t('p2Sub') },
+                    { n: 3, label: t('p3'), sub: t('p3Sub') },
+                    { n: 4, label: t('p4'), sub: t('p4Sub') },
+                  ].map((opt) => `
+                    <button type="button" data-action="draft-players" data-val="${opt.n}"
+                      class="p-2.5 rounded-2xl border text-center transition-all active:scale-95 ${
+                        d.maxPlayers === opt.n ? 'bg-[#1A5142] border-[#D6B56D] text-white shadow-md' : 'bg-[#0C2B23] border-[#235547] text-[#B7C9C1]'
+                      }">
+                      <div class="text-xl font-black text-[#D6B56D]">${opt.n}</div>
+                      <div class="text-xs font-bold">${opt.label}</div>
+                      <div class="text-[10px] opacity-80">${opt.sub}</div>
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Target Score -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-[#B7C9C1]">${t('targetScore')}</label>
+                <div class="grid grid-cols-4 gap-2">
+                  ${[50, 101, 150, 200].map((sc) => `
+                    <button type="button" data-action="draft-target" data-val="${sc}"
+                      class="py-2 rounded-xl text-sm font-extrabold border transition-all active:scale-95 ${
+                        d.targetScore === sc ? 'bg-[#D6B56D] text-[#0F352B] border-[#D6B56D]' : 'bg-[#0C2B23] text-[#B7C9C1] border-[#235547]'
+                      }">
+                      ${sc}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Tie Rule -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-[#B7C9C1]">${t('tieRule')}</label>
+                <div class="grid grid-cols-3 gap-2">
+                  ${[
+                    { id: 'no_points', label: t('tieNoPoints') },
+                    { id: 'split_points', label: t('tieSplit') },
+                    { id: 'active_player_loses', label: t('tieBlockerLoses') },
+                  ].map((r) => `
+                    <button type="button" data-action="draft-tie" data-val="${r.id}"
+                      class="px-2 py-2.5 rounded-xl text-[11px] font-bold border text-center transition-all active:scale-95 ${
+                        d.tieRule === r.id ? 'bg-[#1A5142] text-white border-[#D6B56D]' : 'bg-[#0C2B23] text-[#B7C9C1] border-[#235547]'
+                      }">
+                      ${r.label}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <button type="button" data-action="submit-create" ${store.uiState.loading ? 'disabled' : ''}
+                class="btn-gold w-full py-3.5 px-5 rounded-xl text-sm sm:text-base flex items-center justify-center gap-2 mt-1">
+                <i data-lucide="${store.uiState.loading ? 'loader-2' : 'play'}" class="w-4 h-4 ${store.uiState.loading ? 'animate-spin' : ''}"></i>
+                <span>${store.uiState.loading ? t('creating') : t('createSubmit')}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 3: DEDICATED JOIN ROOM (For ?join=CODE QR Scans)
+      function renderJoinRoomScreen() {
+        const backIcon = store.uiState.lang === 'ar' ? 'arrow-right' : 'arrow-left';
+        const jd = store.uiState.joinDraft;
+
+        return `
+          <div class="anim-view h-full w-full px-4 py-3 flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-[420px] rounded-3xl bg-[#11392F]/95 border border-[#235547] p-6 shadow-2xl flex flex-col gap-4">
+              <button type="button" data-action="go-landing" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#B7C9C1] hover:text-white self-start">
+                <i data-lucide="${backIcon}" class="w-4 h-4"></i>
+                <span>${t('back')}</span>
+              </button>
+
+              <div class="text-center flex flex-col items-center gap-1">
+                <div class="w-12 h-12 rounded-xl bg-[#1A4B3E] border border-[#2A6152] flex items-center justify-center">
+                  <i data-lucide="smartphone" class="w-6 h-6 text-[#D6B56D]"></i>
+                </div>
+                <span class="text-[11px] font-bold text-[#D6B56D]">${t('playerLabel')}</span>
+                <h2 class="text-2xl font-black text-white">${t('joinTitle')}</h2>
+                <p class="text-xs text-[#B7C9C1]">${t('joinSub')}</p>
+              </div>
+
+              <form id="dedicated-join-form" class="flex flex-col gap-3">
+                <input id="ded-code" type="text" maxlength="6" required autocomplete="off"
+                  value="${esc(jd.code)}"
+                  placeholder="${t('codePlaceholder')}"
+                  class="w-full px-4 py-3.5 rounded-xl bg-[#0C2B23] border border-[#235547] focus:border-[#D6B56D] focus:outline-none text-white font-mono text-lg tracking-[0.22em] uppercase text-center" />
+
+                <input id="ded-name" type="text" maxlength="18" required autocomplete="off"
+                  value="${esc(jd.name)}"
+                  placeholder="${t('namePlaceholder')}"
+                  class="w-full px-4 py-3.5 rounded-xl bg-[#0C2B23] border border-[#235547] focus:border-[#D6B56D] focus:outline-none text-white text-sm" />
+
+                ${jd.error ? `
+                  <div class="px-3 py-2 rounded-xl bg-[#D95C5C]/15 border border-[#D95C5C]/45 text-xs text-[#ffd4d4] flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-[#D95C5C] shrink-0"></i>
+                    <span>${esc(jd.error)}</span>
+                  </div>
+                ` : ''}
+
+                <button type="submit" ${store.uiState.loading ? 'disabled' : ''}
+                  class="btn-gold w-full py-3.5 px-5 rounded-xl text-sm flex items-center justify-center gap-2">
+                  <i data-lucide="${store.uiState.loading ? 'loader-2' : 'log-in'}" class="w-4 h-4 ${store.uiState.loading ? 'animate-spin' : ''}"></i>
+                  <span>${store.uiState.loading ? t('joining') : t('joinBtn')}</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 4: WAITING ROOM
+      function renderWaitingRoomScreen() {
+        const room = store.publicState.room;
+        if (!room) return '';
+        const players = store.publicState.players;
+        const isHost = Boolean(store.uiState.hostToken) && store.uiState.role === 'TABLE';
+        const isFull = players.length === room.maxPlayers;
+        const inviteUrl = getInviteUrl(room.code);
+
+        const seatsHtml = Array.from({ length: room.maxPlayers }).map((_, idx) => {
+          const p = players.find((x) => x.seatIndex === idx) || players[idx];
+          const teamTag = room.maxPlayers === 4 ? (idx % 2 === 0 ? t('teamA') : t('teamB')) : null;
+          if (!p) {
+            return `
+              <div class="p-2.5 rounded-xl border border-dashed border-[#235547] bg-[#0C2B23]/70 flex items-center gap-2.5 text-[#B7C9C1]/60">
+                <div class="w-8 h-8 rounded-lg border border-dashed border-[#2A6152] flex items-center justify-center text-xs font-bold">#${idx + 1}</div>
+                <div class="text-xs">
+                  <div>${t('waitingMore')}</div>
+                  ${teamTag ? `<div class="text-[10px] text-[#D6B56D]/75 font-bold">${teamTag}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }
+          const isMe = p.id === store.privateState.activePlayerId;
+          return `
+            <div class="p-2.5 rounded-xl border bg-[#17463A] border-[#2A6152] flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="relative shrink-0">
+                  <div class="w-8 h-8 rounded-lg bg-[#D6B56D] text-[#0F352B] font-extrabold text-xs flex items-center justify-center">
+                    ${esc(p.name.slice(0, 2).toUpperCase())}
+                  </div>
+                  <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#17463A] ${p.isConnected ? 'bg-emerald-400' : 'bg-[#D95C5C]'}"></span>
+                </div>
+                <div class="min-w-0">
+                  <div class="font-bold text-xs sm:text-sm text-white truncate flex items-center gap-1">
+                    <span>${esc(p.name)}</span>
+                    ${isMe ? `<span class="text-[10px] text-[#D6B56D]">(${t('you')})</span>` : ''}
+                    ${p.isBot ? `<span class="text-[9px] px-1 rounded bg-[#0C2B23] text-[#B7C9C1]">${t('bot')}</span>` : ''}
+                  </div>
+                  ${teamTag ? `<div class="text-[10px] text-[#D6B56D] font-bold">${teamTag}</div>` : ''}
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg shrink-0 ${
+                p.isReady ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-[#0C2B23] text-[#B7C9C1] border border-[#235547]'
+              }">
+                <i data-lucide="${p.isReady ? 'check-circle-2' : 'clock'}" class="w-3 h-3"></i>
+                ${p.isReady ? t('ready') : t('notReady')}
+              </span>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="anim-view h-full w-full px-3 sm:px-5 py-3 flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-4xl max-h-full overflow-y-auto app-scroll rounded-3xl bg-[#11392F]/95 border border-[#235547] p-4 sm:p-6 shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+              <!-- QR & Room Code Column -->
+              <div class="lg:col-span-5 flex flex-col items-center justify-center gap-3 bg-[#0C2B23] rounded-2xl p-4 border border-[#235547]">
+                <span class="text-[11px] font-bold text-[#B7C9C1]">${t('roomCode')}</span>
+                <div class="text-3xl font-black font-mono tracking-[0.2em] text-[#D6B56D]">${esc(room.code)}</div>
+
+                <div class="flex items-center gap-2">
+                  <button type="button" data-action="copy-code" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1A4B3E] hover:bg-[#225E4E] border border-[#2A6152] text-[11px] font-bold text-white active:scale-95">
+                    <i data-lucide="copy" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                    <span>${t('copyCode')}</span>
+                  </button>
+                  <button type="button" data-action="copy-link" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1A4B3E] hover:bg-[#225E4E] border border-[#2A6152] text-[11px] font-bold text-white active:scale-95">
+                    <i data-lucide="link" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                    <span>${t('copyLink')}</span>
+                  </button>
+                </div>
+
+                ${renderQrCode(inviteUrl, 126)}
+                <p class="text-[11px] text-[#B7C9C1] text-center">${t('scanHint')}</p>
+
+                ${isHost ? `
+                  <div class="w-full pt-2.5 border-t border-[#235547]">
+                    <div class="grid grid-cols-3 gap-2">
+                      ${[2, 3, 4].map((num) => `
+                        <button type="button" data-action="host-set-players" data-val="${num}" ${store.uiState.actionBusy ? 'disabled' : ''}
+                          class="py-1.5 rounded-xl text-xs font-extrabold border transition-colors active:scale-95 ${
+                            room.maxPlayers === num ? 'bg-[#D6B56D] text-[#0F352B] border-[#D6B56D]' : 'bg-[#11392F] text-[#B7C9C1] border-[#235547]'
+                          }">
+                          ${num}P
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Players & Host Controls Column -->
+              <div class="lg:col-span-7 flex flex-col justify-between gap-4">
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div>
+                      <h2 class="text-lg sm:text-xl font-black text-white">${t('waitingTitle')}</h2>
+                      <p class="text-xs text-[#B7C9C1]">
+                        ${t('playersJoined')}: <strong class="text-[#D6B56D]">${players.length} / ${room.maxPlayers}</strong>
+                      </p>
+                    </div>
+
+                    ${isHost && !isFull ? `
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" data-action="add-bot" ${store.uiState.actionBusy ? 'disabled' : ''}
+                          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#1A4B3E] hover:bg-[#235E4E] border border-[#2A6152] text-[11px] font-bold text-white active:scale-95">
+                          <i data-lucide="bot" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                          <span>${t('addBot')}</span>
+                        </button>
+                        <button type="button" data-action="add-local-human" ${store.uiState.actionBusy ? 'disabled' : ''}
+                          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#143E33] hover:bg-[#194A3D] border border-[#26584A] text-[11px] font-bold text-[#D6B56D] active:scale-95">
+                          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                          <span>${t('addTestHuman')}</span>
+                        </button>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${seatsHtml}</div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-3 border-t border-[#235547]">
+                  ${isHost ? `
+                    <button type="button" data-action="start-match" ${!isFull || store.uiState.actionBusy ? 'disabled' : ''}
+                      class="btn-gold flex-1 py-3.5 px-5 rounded-xl text-sm flex items-center justify-center gap-2">
+                      <i data-lucide="${store.uiState.actionBusy ? 'loader-2' : 'play'}" class="w-4 h-4 ${store.uiState.actionBusy ? 'animate-spin' : ''}"></i>
+                      <span>${isFull ? t('startMatch') : t('waitingMore')}</span>
+                    </button>
+                  ` : `
+                    <button type="button" data-action="toggle-ready" ${store.uiState.actionBusy ? 'disabled' : ''}
+                      class="btn-gold px-5 py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 shrink-0">
+                      <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                      <span>${t('toggleReady')}</span>
+                    </button>
+                    <div class="flex-1 text-[11px] text-[#B7C9C1] leading-snug">${t('waitingHostStart')}</div>
+                  `}
+
+                  <button type="button" data-action="open-confirm-home" title="${t('returnHome')}"
+                    class="p-3.5 rounded-xl bg-[#143E33] hover:bg-[#194A3D] text-[#B7C9C1] hover:text-white border border-[#26584A] active:scale-95">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 5: SHARED TABLET GAME BOARD (STRICT PRIVACY — ZERO PRIVATE TILES)
+      function renderTabletBoardScreen() {
+        const room = store.publicState.room;
+        if (!room) return '';
+        const tp = getTurnPlayer();
+        const anyOffline = store.publicState.players.some((p) => !p.isConnected);
+        const canManualBot = Boolean(store.uiState.hostToken && tp && tp.isBot);
+
+        return `
+          <div class="anim-view h-full w-full flex flex-col p-2 sm:p-3 gap-2 overflow-hidden">
+            <!-- Public Game HUD -->
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-[#11392F]/95 border border-[#235547] rounded-2xl px-3 py-1.5 shrink-0 shadow-md">
+              <div class="flex items-center gap-2.5 text-xs">
+                <span class="font-mono font-extrabold text-[#D6B56D] tracking-widest bg-[#0C2B23] px-2 py-0.5 rounded-lg border border-[#235547]">
+                  ${esc(room.code)}
+                </span>
+                <span class="text-[#B7C9C1]">${t('round')} <strong class="text-white">#${room.roundNumber}</strong></span>
+                <span class="text-[#B7C9C1] hidden sm:inline">${t('target')}: <strong class="text-[#D6B56D]">${room.targetScore}</strong></span>
+                <div class="hidden sm:flex items-center gap-1 font-mono text-[#B7C9C1] bg-[#0C2B23] px-2 py-0.5 rounded-lg border border-[#235547]">
+                  <i data-lucide="clock" class="w-3 h-3 text-[#D6B56D]"></i>
+                  <span id="hud-timer">${fmtTimer(store.publicState.elapsedSeconds)}</span>
+                </div>
+              </div>
+
+              <!-- Turn / Connection Status Pill -->
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-extrabold ${
+                anyOffline
+                  ? 'bg-[#D95C5C]/20 text-[#ffd2d2] border-[#D95C5C]/50'
+                  : 'bg-[#1A4B3E] text-[#D6B56D] border-[#D6B56D]/50'
+              }">
+                <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+                <span>${anyOffline ? t('offlineWarn') : `${t('turnOf')} ${esc(tp?.name || '')}`}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                ${room.maxPlayers === 4 ? `
+                  <div class="flex items-center gap-2 bg-[#0C2B23] px-2.5 py-1 rounded-xl border border-[#235547] text-xs font-extrabold">
+                    <span class="text-[#D6B56D]">${t('teamA')}: ${room.teamScores.A}</span>
+                    <span class="text-[#235547]">|</span>
+                    <span class="text-white">${t('teamB')}: ${room.teamScores.B}</span>
+                  </div>
+                ` : ''}
+
+                ${canManualBot ? `
+                  <button type="button" data-action="bot-step" ${store.uiState.actionBusy ? 'disabled' : ''}
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#D6B56D] hover:bg-[#E3C47E] text-[#0F352B] text-[11px] font-black active:scale-95">
+                    <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                    <span>${t('botStep')}</span>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Deep Forest Green Tabletop Felt -->
+            <div class="table-felt flex-1 relative rounded-2xl border border-[#235547] flex flex-col justify-between p-2 sm:p-3.5 overflow-hidden">
+              <!-- TOP SEAT -->
+              <div class="flex items-center justify-center min-h-[48px] z-10 shrink-0">
+                ${renderSeatBadge(getSeatPlayer('TOP'), 'TOP')}
+              </div>
+
+              <!-- MIDDLE: LEFT SEAT + CHAIN + RIGHT SEAT + DRAW PILE -->
+              <div class="flex-1 flex items-center justify-between gap-2 sm:gap-3 min-h-0 my-1">
+                <div class="flex items-center justify-center shrink-0 z-10">
+                  ${renderSeatBadge(getSeatPlayer('LEFT'), 'LEFT')}
+                </div>
+
+                <div class="flex-1 h-full flex items-center justify-center min-w-0 overflow-hidden">
+                  ${renderBoardChain()}
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 z-10">
+                  ${renderSeatBadge(getSeatPlayer('RIGHT'), 'RIGHT')}
+                  ${renderDrawPile()}
+                </div>
+              </div>
+
+              <!-- BOTTOM SEAT -->
+              <div class="flex items-center justify-center min-h-[48px] z-10 shrink-0">
+                ${renderSeatBadge(getSeatPlayer('BOTTOM'), 'BOTTOM')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 6: PRIVATE SMARTPHONE PLAYER SCREEN
+      function renderPlayerGameScreen() {
+        const room = store.publicState.room;
+        const player = store.publicState.players.find((p) => p.id === store.privateState.activePlayerId);
+        if (!room || !player) return '';
+
+        const ps = store.privateState;
+        const tp = getTurnPlayer();
+        const is4P = room.maxPlayers === 4;
+        const team = player.team || (player.seatIndex % 2 === 0 ? 'A' : 'B');
+        const scoreVal = is4P ? (team === 'A' ? room.teamScores.A : room.teamScores.B) : player.score;
+
+        const selTile = ps.tiles.find((x) => x.id === ps.selectedTileId) || null;
+        const selMoves = selTile ? ps.validMoves[selTile.id] : null;
+        const isBoardEmpty = room.board.length === 0;
+        const matchesBoth = !isBoardEmpty && selMoves && selMoves.canLeft && selMoves.canRight && room.leftEnd !== room.rightEnd;
+
+        let chosenEnd = ps.selectedEnd;
+        if (selTile && selMoves) {
+          if (isBoardEmpty) chosenEnd = 'right';
+          else if (selMoves.canLeft && !selMoves.canRight) chosenEnd = 'left';
+          else if (selMoves.canRight && !selMoves.canLeft) chosenEnd = 'right';
+          else if (selMoves.canLeft && selMoves.canRight && room.leftEnd === room.rightEnd) chosenEnd = 'right';
+        }
+
+        const canPlay = Boolean(ps.isMyTurn && selTile && selMoves && chosenEnd && !store.uiState.actionBusy);
+
+        let hint = `${t('waitingTurn')} ${tp?.name || ''}...`;
+        if (ps.isMyTurn) {
+          if (selTile) hint = matchesBoth && !chosenEnd ? t('hintPickEnd') : t('hintPressPlay');
+          else if (Object.keys(ps.validMoves).length > 0) hint = isBoardEmpty ? t('emptyOpenAny') : t('hintSelect');
+          else if (ps.canDraw) hint = room.maxPlayers === 2 ? t('hintDraw2') : t('hintDraw3');
+          else if (ps.canPass) hint = t('hintPass');
+        }
+
+        const handHtml = ps.tiles.map((tile) => {
+          const playable = ps.isMyTurn && Boolean(ps.validMoves[tile.id]);
+          const selected = ps.selectedTileId === tile.id;
+          return `
+            <div class="snap-center shrink-0">
+              ${dominoHtml({
+                id: tile.id,
+                left: tile.left,
+                right: tile.right,
+                orientation: 'vertical',
+                size: 'lg',
+                playable,
+                selected,
+                dimmed: ps.isMyTurn && !playable,
+                interactive: true,
+              })}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="anim-view h-full w-full flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+            <div class="w-full max-w-[430px] h-full sm:max-h-[780px] rounded-3xl bg-[#11392F]/95 border border-[#235547] shadow-2xl flex flex-col justify-between overflow-hidden">
+
+              <!-- TOP STATUS BAR -->
+              <div class="p-3.5 bg-[#0C2B23] border-b border-[#235547] flex flex-col gap-2.5 shrink-0">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-[#D6B56D] text-[#0F352B] font-black flex items-center justify-center shrink-0">
+                      ${esc(player.name.slice(0, 2).toUpperCase())}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-extrabold text-white text-sm truncate flex items-center gap-1.5">
+                        <span>${esc(player.name)}</span>
+                        ${is4P ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-[#1A4B3E] text-[#D6B56D] border border-[#2A6152]">${team === 'A' ? t('teamA') : t('teamB')}</span>` : ''}
+                      </div>
+                      <div class="text-[11px] text-[#B7C9C1] font-mono">
+                        ${esc(room.code)} • ${t('round')} #${room.roundNumber}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col items-end gap-0.5 shrink-0">
+                    <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      !store.uiState.isDisconnected ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-[#D95C5C]/20 text-[#ffd2d2] border border-[#D95C5C]/40'
+                    }">
+                      <span class="w-1.5 h-1.5 rounded-full ${!store.uiState.isDisconnected ? 'bg-emerald-400' : 'bg-[#D95C5C]'}"></span>
+                      ${!store.uiState.isDisconnected ? t('online') : t('offline')}
+                    </span>
+                    <span class="text-xs font-extrabold text-[#D6B56D]">${t('score')}: ${scoreVal}/${room.targetScore}</span>
+                  </div>
+                </div>
+
+                <!-- Animated Turn Banner -->
+                <div class="w-full py-2 px-3 rounded-xl text-center text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 ${
+                  ps.isMyTurn ? 'bg-[#D6B56D] text-[#0F352B] anim-turn-halo' : 'bg-[#11392F] text-[#B7C9C1] border border-[#235547]'
+                }">
+                  <i data-lucide="hand" class="w-4 h-4"></i>
+                  <span>${ps.isMyTurn ? t('yourTurn') : `${t('turnOf')} ${esc(tp?.name || '')}`}</span>
+                </div>
+              </div>
+
+              <!-- COMPACT LIVE ENDS STRIP -->
+              <div class="px-3.5 pt-2.5 shrink-0">
+                <div class="rounded-2xl bg-[#0C2B23] border border-[#235547] p-2.5">
+                  ${isBoardEmpty ? `
+                    <div class="text-center text-xs font-bold text-[#D6B56D] py-1.5">${t('emptyOpenAny')}</div>
+                  ` : `
+                    <div dir="ltr" class="grid grid-cols-3 items-center gap-2 text-center">
+                      <button type="button" data-action="pick-end" data-end="left" ${!selMoves?.canLeft ? 'disabled' : ''}
+                        class="flex flex-col items-center p-1.5 rounded-xl border transition-all active:scale-95 ${
+                          selMoves?.canLeft
+                            ? (chosenEnd === 'left' ? 'bg-[#D6B56D] text-[#0F352B] border-[#F5F0E5]' : 'bg-[#1A5142] text-white border-[#D6B56D] anim-end-pulse cursor-pointer')
+                            : 'bg-[#11392F] text-white border-[#235547] opacity-80'
+                        }">
+                        <span class="text-[10px] font-bold opacity-80">${t('leftEnd')}</span>
+                        <div class="w-7 h-7 my-0.5 rounded-lg bg-[#F5F0E5] p-0.5 shadow-inner">${pipSvg(room.leftEnd)}</div>
+                      </button>
+
+                      <div class="flex flex-col items-center gap-0.5 text-[11px] text-[#B7C9C1]">
+                        <span class="font-bold text-white">${room.board.length} ${t('onBoard')}</span>
+                        ${room.maxPlayers !== 4 ? `<span class="text-[10px] font-bold text-[#D6B56D]">${t('drawPile')}: ${room.drawPileCount}</span>` : ''}
+                      </div>
+
+                      <button type="button" data-action="pick-end" data-end="right" ${!selMoves?.canRight ? 'disabled' : ''}
+                        class="flex flex-col items-center p-1.5 rounded-xl border transition-all active:scale-95 ${
+                          selMoves?.canRight
+                            ? (chosenEnd === 'right' ? 'bg-[#D6B56D] text-[#0F352B] border-[#F5F0E5]' : 'bg-[#1A5142] text-white border-[#D6B56D] anim-end-pulse cursor-pointer')
+                            : 'bg-[#11392F] text-white border-[#235547] opacity-80'
+                        }">
+                        <span class="text-[10px] font-bold opacity-80">${t('rightEnd')}</span>
+                        <div class="w-7 h-7 my-0.5 rounded-lg bg-[#F5F0E5] p-0.5 shadow-inner">${pipSvg(room.rightEnd)}</div>
+                      </button>
+                    </div>
+                  `}
+                </div>
+              </div>
+
+              <!-- CENTER PRIVATE HAND (HORIZONTAL SNAP-SCROLL TRAY) -->
+              <div class="flex-1 flex flex-col justify-center px-3.5 py-1 min-h-0">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-[#B7C9C1]">${t('privateHand')} (${ps.tiles.length})</span>
+                  ${selTile ? `<span class="text-xs font-mono font-black text-[#D6B56D]">[${selTile.left} | ${selTile.right}]</span>` : ''}
+                </div>
+
+                ${matchesBoth ? `
+                  <div class="mb-1.5 flex items-center justify-between gap-2 bg-[#17463A] border border-[#D6B56D] rounded-xl px-3 py-1.5 shadow-lg">
+                    <span class="text-[11px] font-bold text-[#F5F0E5]">${t('chooseEnd')}</span>
+                    <div dir="ltr" class="flex items-center gap-1.5">
+                      <button type="button" data-action="pick-end" data-end="left"
+                        class="px-2.5 py-1 rounded-lg text-xs font-extrabold active:scale-95 ${
+                          chosenEnd === 'left' ? 'bg-[#D6B56D] text-[#0F352B]' : 'bg-[#0C2B23] text-white border border-[#2A6152]'
+                        }">
+                        ← ${room.leftEnd}
+                      </button>
+                      <button type="button" data-action="pick-end" data-end="right"
+                        class="px-2.5 py-1 rounded-lg text-xs font-extrabold active:scale-95 ${
+                          chosenEnd === 'right' ? 'bg-[#D6B56D] text-[#0F352B]' : 'bg-[#0C2B23] text-white border border-[#2A6152]'
+                        }">
+                        ${room.rightEnd} →
+                      </button>
+                    </div>
+                  </div>
+                ` : ''}
+
+                <div class="w-full overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-5">
+                  <div class="flex items-center gap-3 w-max mx-auto px-3">${handHtml}</div>
+                </div>
+              </div>
+
+              <!-- BOTTOM ACTION BAR -->
+              <div class="p-3.5 bg-[#0C2B23] border-t border-[#235547] flex flex-col gap-2 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
+                <p class="text-[11px] text-center text-[#B7C9C1] min-h-[16px]">${esc(hint)}</p>
+
+                <div class="flex items-center gap-2">
+                  <button type="button" data-action="play-selected" data-end="${chosenEnd || ''}" ${!canPlay ? 'disabled' : ''}
+                    class="btn-gold flex-1 py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="${store.uiState.actionBusy ? 'loader-2' : 'play'}" class="w-4 h-4 ${store.uiState.actionBusy ? 'animate-spin' : ''}"></i>
+                    <span>${t('playTile')}</span>
+                  </button>
+
+                  ${ps.canDraw ? `
+                    <button type="button" data-action="draw-tile" ${store.uiState.actionBusy ? 'disabled' : ''}
+                      class="py-3.5 px-4 rounded-xl bg-[#1A5142] hover:bg-[#236654] border border-[#D6B56D] text-[#D6B56D] font-extrabold text-sm flex items-center justify-center gap-1.5 active:scale-95">
+                      <i data-lucide="plus" class="w-4 h-4"></i>
+                      <span>${t('drawTile')}</span>
+                    </button>
+                  ` : ''}
+
+                  ${ps.canPass ? `
+                    <button type="button" data-action="pass-turn" ${store.uiState.actionBusy ? 'disabled' : ''}
+                      class="py-3.5 px-4 rounded-xl bg-[#D95C5C] hover:bg-[#e56d6d] text-white font-extrabold text-sm flex items-center justify-center gap-1.5 active:scale-95">
+                      <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                      <span>${t('passTurn')}</span>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 8: ROUND RESULTS
+      function renderRoundResultsScreen() {
+        const room = store.publicState.room;
+        if (!room) return '';
+        const res = room.roundResult || {};
+        const isHost = Boolean(store.uiState.hostToken);
+        const isTie = Boolean(res.isTie || res.is_tie || String(res.winnerType || '').toUpperCase() === 'TIE');
+        const blocked = String(res.reason || '').toLowerCase().includes('block');
+        const pts = Number(res.pointsAwarded ?? res.points_awarded ?? 0);
+        const wType = String(res.winnerType || res.winner_type || '').toUpperCase();
+        const wId = res.winnerId || res.winner_id || '';
+        const wName = wType === 'TEAM' ? (String(wId).toUpperCase() === 'A' ? t('teamA') : t('teamB')) : (res.winnerName || res.winner_name || '');
+        const revealed = res.revealedHands || res.revealed_hands || {};
+        const remPips = res.remainingPips || res.remaining_pips || {};
+
+        const handsHtml = store.publicState.players.map((p) => {
+          const rawTiles = revealed[p.id] || revealed[String(p.seatIndex)] || [];
+          const tiles = Array.isArray(rawTiles) ? rawTiles.map(normTile) : [];
+          const sum = remPips[p.id] !== undefined ? remPips[p.id] : tiles.reduce((a, b) => a + b.left + b.right, 0);
+          return `
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-[#11392F] px-3 py-2 rounded-xl border border-[#235547]">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-xs sm:text-sm text-white">${esc(p.name)}</span>
+                <span class="text-xs text-[#D6B56D] font-bold">(${sum} ${t('pips')})</span>
+              </div>
+              <div class="flex items-center gap-1 flex-wrap">
+                ${tiles.length === 0
+                  ? `<span class="text-xs text-emerald-400 font-bold">0 ${t('tilesLeft')}</span>`
+                  : tiles.map((tile) => dominoHtml({ left: tile.left, right: tile.right, orientation: 'horizontal', size: 'xs' })).join('')
+                }
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const scoresHtml = room.maxPlayers === 4
+          ? [{ l: t('teamA'), s: room.teamScores.A }, { l: t('teamB'), s: room.teamScores.B }].map((tm) => `
+              <div class="bg-[#0C2B23] p-3 rounded-xl border border-[#235547]">
+                <div class="flex justify-between text-xs sm:text-sm font-extrabold text-white mb-1.5">
+                  <span>${tm.l}</span>
+                  <span class="text-[#D6B56D]">${tm.s} / ${room.targetScore}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-[#11392F] overflow-hidden">
+                  <div style="width:${Math.min(100, Math.round((tm.s / room.targetScore) * 100))}%" class="h-full bg-[#D6B56D] rounded-full"></div>
+                </div>
+              </div>
+            `).join('')
+          : store.publicState.players.map((p) => `
+              <div class="bg-[#0C2B23] p-3 rounded-xl border border-[#235547]">
+                <div class="flex justify-between text-xs sm:text-sm font-extrabold text-white mb-1.5">
+                  <span class="truncate">${esc(p.name)}</span>
+                  <span class="text-[#D6B56D]">${p.score}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-[#11392F] overflow-hidden">
+                  <div style="width:${Math.min(100, Math.round((p.score / room.targetScore) * 100))}%" class="h-full bg-[#D6B56D] rounded-full"></div>
+                </div>
+              </div>
+            `).join('');
+
+        return `
+          <div class="anim-view h-full w-full px-4 py-3 flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-2xl max-h-full overflow-y-auto app-scroll rounded-3xl bg-[#11392F]/95 border border-[#D6B56D]/60 p-5 sm:p-6 shadow-2xl flex flex-col gap-4">
+              <div class="text-center">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A4B3E] border border-[#2A6152] text-[11px] font-bold text-[#D6B56D] mb-1.5">
+                  ${t('round')} #${room.roundNumber} — ${t('roundResults')}
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white">
+                  ${isTie ? t('roundTie') : `${t('roundWinner')}: ${esc(wName)}`}
+                </h2>
+                <p class="text-xs text-[#B7C9C1] mt-1">${blocked ? t('reasonBlocked') : t('reasonDomino')}</p>
+                ${pts > 0 ? `<div class="mt-2.5 inline-flex px-4 py-1 rounded-xl bg-[#D6B56D]/20 border border-[#D6B56D] text-[#D6B56D] text-sm font-extrabold">+${pts} ${t('pts')}</div>` : ''}
+              </div>
+
+              <div class="bg-[#0C2B23] rounded-2xl p-3.5 border border-[#235547]">
+                <h4 class="text-xs font-bold text-[#B7C9C1] mb-2.5">${t('revealedHands')}</h4>
+                <div class="flex flex-col gap-2">${handsHtml}</div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <h4 class="text-xs font-bold text-[#B7C9C1]">${t('scoreboard')} (${t('target')}: ${room.targetScore})</h4>
+                <div class="grid ${room.maxPlayers === 4 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'} gap-2">${scoresHtml}</div>
+              </div>
+
+              ${isHost ? `
+                <button type="button" data-action="next-round" ${store.uiState.actionBusy ? 'disabled' : ''}
+                  class="btn-gold w-full py-3.5 px-5 rounded-xl text-sm flex items-center justify-center gap-2">
+                  <i data-lucide="${store.uiState.actionBusy ? 'loader-2' : 'play'}" class="w-4 h-4 ${store.uiState.actionBusy ? 'animate-spin' : ''}"></i>
+                  <span>${t('nextRound')}</span>
+                </button>
+              ` : `
+                <div class="text-center text-xs font-bold text-[#B7C9C1] py-2.5 bg-[#0C2B23] rounded-xl border border-[#235547]">
+                  ${t('waitingHostNext')}
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
+      // SCREEN 9: MATCH RESULTS (WITH GOLDEN CONFETTI CANVAS)
+      function renderMatchResultsScreen() {
+        const room = store.publicState.room;
+        if (!room) return '';
+        const isHost = Boolean(store.uiState.hostToken);
+        const is4P = room.maxPlayers === 4;
+        const standings = is4P
+          ? [{ name: t('teamA'), score: room.teamScores.A }, { name: t('teamB'), score: room.teamScores.B }].sort((a, b) => b.score - a.score)
+          : [...store.publicState.players].sort((a, b) => b.score - a.score);
+        const champ = standings[0]?.name || '';
+
+        return `
+          <div class="anim-view h-full w-full px-4 py-4 flex items-center justify-center overflow-hidden">
+            <div class="w-full max-w-md max-h-full overflow-y-auto app-scroll rounded-3xl bg-[#11392F]/95 border-2 border-[#D6B56D] p-6 shadow-2xl text-center flex flex-col items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-[#1A4B3E] border border-[#D6B56D] flex items-center justify-center shadow-[0_0_28px_rgba(214,181,109,0.4)]">
+                <i data-lucide="trophy" class="w-8 h-8 text-[#D6B56D]"></i>
+              </div>
+
+              <div>
+                <div class="text-xs font-bold text-[#D6B56D] mb-0.5">${t('matchChampion')}</div>
+                <h2 class="text-3xl font-black text-white">${esc(champ)}</h2>
+                <p class="text-xs text-[#B7C9C1] mt-1">${t('roundsPlayed')}: ${room.roundNumber}</p>
+              </div>
+
+              <div class="w-full flex flex-col gap-2 text-start">
+                <h4 class="text-xs font-bold text-[#B7C9C1]">${t('finalStandings')}</h4>
+                ${standings.map((s, idx) => `
+                  <div class="flex items-center justify-between px-4 py-3 rounded-xl border ${
+                    idx === 0 ? 'bg-[#1A5142] border-[#D6B56D] text-white' : 'bg-[#0C2B23] border-[#235547] text-[#B7C9C1]'
+                  }">
+                    <div class="flex items-center gap-2 font-bold text-sm">
+                      ${idx === 0 ? '<i data-lucide="crown" class="w-4 h-4 text-[#D6B56D]"></i>' : `<span class="text-xs">#${idx + 1}</span>`}
+                      <span>${esc(s.name)}</span>
+                    </div>
+                    <span class="font-mono font-extrabold text-[#D6B56D] text-sm">${s.score} ${t('pts')}</span>
+                  </div>
+                `).join('')}
+              </div>
+
+              ${isHost ? `
+                <div class="w-full grid grid-cols-2 gap-2.5 pt-1">
+                  <button type="button" data-action="rematch" ${store.uiState.actionBusy ? 'disabled' : ''}
+                    class="btn-gold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    <span>${t('rematch')}</span>
+                  </button>
+                  <button type="button" data-action="leave-now"
+                    class="py-3.5 px-4 rounded-xl bg-[#143E33] hover:bg-[#194A3D] text-white font-bold text-sm border border-[#26584A] active:scale-95 flex items-center justify-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                    <span>${t('returnHome')}</span>
+                  </button>
+                </div>
+              ` : `
+                <div class="w-full flex flex-col gap-2.5">
+                  <p class="text-xs text-[#B7C9C1]">${t('waitingHostRematch')}</p>
+                  <button type="button" data-action="leave-now"
+                    class="w-full py-3.5 rounded-xl bg-[#143E33] hover:bg-[#194A3D] text-white font-bold text-sm border border-[#26584A] active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                    <span>${t('returnHome')}</span>
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
+      // BOTTOM SHEETS & OVERLAYS (SETTINGS, DEVICE SIMULATOR, CONFIRM, DISCONNECTED)
+      function renderModals() {
+        const root = document.getElementById('modal-root');
+        if (!root) return;
+        let html = '';
+
+        // Settings Bottom Sheet
+        if (store.uiState.settingsOpen) {
+          const room = store.publicState.room;
+          const canHostEdit = !room || Boolean(store.uiState.hostToken);
+          const curTarget = room ? room.targetScore : store.uiState.createDraft.targetScore;
+          const curTie = room ? room.tieRule : store.uiState.createDraft.tieRule;
+
+          html += `
+            <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+              <div data-action="close-modals" class="absolute inset-0 bg-black/65 backdrop-blur-sm"></div>
+              <div class="anim-sheet relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#11392F] border-t sm:border border-[#2A6152] p-5 sm:p-6 shadow-2xl max-h-[86dvh] flex flex-col gap-4 overflow-hidden">
+                <div class="w-10 h-1 rounded-full bg-[#2A6152] mx-auto sm:hidden -mt-1"></div>
+                <div class="flex items-center justify-between shrink-0">
+                  <h3 class="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-[#D6B56D]"></i>
+                    <span>${t('settingsTitle')}</span>
+                  </h3>
+                  <button type="button" data-action="close-modals" class="p-1.5 rounded-xl bg-[#1A4B3E] border border-[#2A6152] text-[#B7C9C1] hover:text-white active:scale-95">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <div class="overflow-y-auto app-scroll flex-1 flex flex-col gap-3.5">
+                  ${[
+                    { label: t('soundLabel'), val: store.uiState.soundEnabled, act: 'toggle-sound' },
+                    { label: t('hapticsLabel'), val: store.uiState.hapticsEnabled, act: 'toggle-haptics' },
+                    { label: t('autoBotLabel'), val: store.uiState.autoBot, act: 'toggle-autobot' },
+                  ].map((row) => `
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm text-white font-semibold">${row.label}</span>
+                      <button type="button" data-action="${row.act}"
+                        class="w-11 h-6 rounded-full p-0.5 transition-colors ${row.val ? 'bg-[#D6B56D]' : 'bg-[#0C2B23] border border-[#235547]'}">
+                        <div class="w-5 h-5 rounded-full bg-[#0F352B] transition-transform ${row.val ? 'translate-x-5 rtl:-translate-x-5' : ''}"></div>
+                      </button>
+                    </div>
+                  `).join('')}
+
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-white font-semibold">${t('langLabel')}</span>
+                    <button type="button" data-action="toggle-lang"
+                      class="px-3.5 py-1.5 rounded-full bg-[#17463A] border border-[#2A6152] text-xs font-extrabold text-[#D6B56D] active:scale-95">
+                      ${store.uiState.lang === 'ar' ? 'العربية (RTL)' : 'English (LTR)'}
+                    </button>
+                  </div>
+
+                  <div class="pt-3 border-t border-[#235547] flex flex-col gap-3">
+                    <div class="text-xs font-bold text-[#D6B56D]">${t('hostRulesTitle')}</div>
+                    <div class="grid grid-cols-4 gap-2">
+                      ${[50, 101, 150, 200].map((sc) => `
+                        <button type="button" data-action="set-target-live" data-val="${sc}" ${!canHostEdit ? 'disabled' : ''}
+                          class="py-2 rounded-xl text-xs font-extrabold border ${
+                            curTarget === sc ? 'bg-[#D6B56D] text-[#0F352B] border-[#D6B56D]' : 'bg-[#0C2B23] text-[#B7C9C1] border-[#235547]'
+                          } ${!canHostEdit ? 'opacity-50 cursor-not-allowed' : ''}">
+                          ${sc}
+                        </button>
+                      `).join('')}
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                      ${[
+                        { id: 'no_points', label: t('tieNoPoints') },
+                        { id: 'split_points', label: t('tieSplit') },
+                        { id: 'active_player_loses', label: t('tieBlockerLoses') },
+                      ].map((r) => `
+                        <button type="button" data-action="set-tie-live" data-val="${r.id}" ${!canHostEdit ? 'disabled' : ''}
+                          class="px-2 py-2 rounded-xl text-[11px] font-bold border text-center ${
+                            curTie === r.id ? 'bg-[#1A5142] text-white border-[#D6B56D]' : 'bg-[#0C2B23] text-[#B7C9C1] border-[#235547]'
+                          } ${!canHostEdit ? 'opacity-50 cursor-not-allowed' : ''}">
+                          ${r.label}
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" data-action="close-modals" class="btn-gold w-full py-3 rounded-xl text-sm">
+                  ${t('saveClose')}
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        // Device Simulator Bottom Sheet
+        if (store.uiState.simOpen) {
+          const room = store.publicState.room;
+          const tp = getTurnPlayer();
+
+          html += `
+            <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+              <div data-action="close-modals" class="absolute inset-0 bg-black/65 backdrop-blur-sm"></div>
+              <div class="anim-sheet relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#11392F] border-t sm:border border-[#2A6152] p-5 sm:p-6 shadow-2xl max-h-[86dvh] flex flex-col gap-3.5 overflow-hidden">
+                <div class="w-10 h-1 rounded-full bg-[#2A6152] mx-auto sm:hidden -mt-1"></div>
+                <div class="flex items-center justify-between shrink-0">
+                  <h3 class="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="monitor-smartphone" class="w-5 h-5 text-[#D6B56D]"></i>
+                    <span>${t('simTitle')}</span>
+                  </h3>
+                  <button type="button" data-action="close-modals" class="p-1.5 rounded-xl bg-[#1A4B3E] border border-[#2A6152] text-[#B7C9C1] hover:text-white active:scale-95">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <div class="overflow-y-auto app-scroll flex-1 flex flex-col gap-3">
+                  <p class="text-xs text-[#B7C9C1]">${t('simDesc')}</p>
+
+                  ${!room ? `
+                    <div class="bg-[#0C2B23] rounded-2xl p-4 border border-[#235547] text-center text-xs text-[#B7C9C1]">
+                      ${t('simNoRoom')}
+                    </div>
+                  ` : `
+                    <button type="button" data-action="sim-tablet"
+                      class="w-full py-2.5 px-3.5 rounded-xl text-xs font-extrabold border flex items-center justify-between active:scale-98 ${
+                        store.uiState.role === 'TABLE' ? 'bg-[#D6B56D] text-[#0F352B] border-[#D6B56D]' : 'bg-[#0C2B23] text-white border-[#235547]'
+                      }">
+                      <span class="flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        <span>${t('simTablet')}</span>
+                      </span>
+                      <span class="font-mono">${esc(room.code)}</span>
+                    </button>
+
+                    ${store.publicState.players.length > 0 ? `
+                      <div class="flex flex-col gap-1.5">
+                        <span class="text-[11px] font-bold text-[#B7C9C1]">${t('simPhones')}</span>
+                        <div class="grid grid-cols-2 gap-2">
+                          ${store.publicState.players.map((p) => {
+                            const hasTok = Boolean(store.uiState.localPlayers[p.id]?.token);
+                            const active = store.uiState.role === 'PLAYER' && store.privateState.activePlayerId === p.id;
+                            const isTurn = tp && tp.id === p.id && room.status === 'playing';
+                            return `
+                              <button type="button" data-action="sim-player" data-pid="${esc(p.id)}" ${!hasTok ? 'disabled' : ''}
+                                title="${hasTok ? '' : t('extPlayerLock')}"
+                                class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-between ${
+                                  active
+                                    ? 'bg-[#D6B56D] text-[#0F352B] border-[#D6B56D]'
+                                    : hasTok
+                                    ? 'bg-[#0C2B23] text-white border-[#235547] hover:border-[#D6B56D]/60'
+                                    : 'bg-[#0C2B23]/50 text-[#B7C9C1]/45 border-[#235547] cursor-not-allowed'
+                                }">
+                                <span class="truncate">P${p.seatIndex + 1}: ${esc(p.name)}</span>
+                                ${isTurn ? '<span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>' : (!hasTok ? '<i data-lucide="lock" class="w-3 h-3 shrink-0"></i>' : '')}
+                              </button>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-[#235547]">
+                      <span class="text-[11px] font-bold text-[#B7C9C1]">${t('simTools')}</span>
+                      <div class="grid grid-cols-2 gap-2">
+                        ${room.status === 'waiting' && store.publicState.players.length < room.maxPlayers ? `
+                          <button type="button" data-action="add-local-human"
+                            class="py-2 px-3 rounded-xl text-xs font-bold bg-[#1A4B3E] border border-[#2A6152] text-white flex items-center justify-center gap-1.5">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                            <span>${t('addTestHuman')}</span>
+                          </button>
+                          <button type="button" data-action="add-bot"
+                            class="py-2 px-3 rounded-xl text-xs font-bold bg-[#1A4B3E] border border-[#2A6152] text-white flex items-center justify-center gap-1.5">
+                            <i data-lucide="bot" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                            <span>${t('addBot')}</span>
+                          </button>
+                        ` : ''}
+
+                        ${room.status === 'playing' && store.uiState.hostToken ? `
+                          <button type="button" data-action="bot-step"
+                            class="py-2 px-3 rounded-xl text-xs font-bold bg-[#1A4B3E] border border-[#2A6152] text-white flex items-center justify-center gap-1.5">
+                            <i data-lucide="bot" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                            <span>${t('botStep')}</span>
+                          </button>
+                        ` : ''}
+
+                        <button type="button" data-action="copy-link"
+                          class="py-2 px-3 rounded-xl text-xs font-bold bg-[#0C2B23] border border-[#235547] text-white flex items-center justify-center gap-1.5">
+                          <i data-lucide="link" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
+                          <span>${t('copyLink')}</span>
+                        </button>
+
+                        <button type="button" data-action="sim-disconnect"
+                          class="py-2 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 ${
+                            store.uiState.isDisconnected ? 'bg-[#D95C5C] text-white border-[#D95C5C]' : 'bg-[#0C2B23] text-[#ffd2d2] border-[#D95C5C]/40'
+                          }">
+                          <i data-lucide="wifi-off" class="w-3.5 h-3.5"></i>
+                          <span>${store.uiState.isDisconnected ? t('simReconnect') : t('simDisconnect')}</span>
+                        </button>
+
+                        <button type="button" data-action="leave-now"
+                          class="col-span-2 py-2.5 px-3 rounded-xl text-xs font-bold bg-[#0C2B23] hover:bg-[#194A3D] border border-[#235547] text-[#B7C9C1] hover:text-white flex items-center justify-center gap-1.5">
+                          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                          <span>${t('simLeave')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Confirm Return Home Dialog
+        if (store.uiState.confirmHomeOpen) {
+          html += `
+            <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+              <div class="anim-modal w-full max-w-sm rounded-3xl bg-[#11392F] border border-[#2A6152] p-6 shadow-2xl text-center flex flex-col gap-4">
+                <h3 class="text-lg font-extrabold text-white">${t('confirmHomeTitle')}</h3>
+                <p class="text-xs text-[#B7C9C1] leading-relaxed">${t('confirmHomeDesc')}</p>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button type="button" data-action="close-modals" class="py-3 rounded-xl bg-[#143E33] border border-[#26584A] text-white font-bold text-xs active:scale-95">
+                    ${t('stay')}
+                  </button>
+                  <button type="button" data-action="confirm-home" class="btn-gold py-3 rounded-xl text-xs">
+                    ${t('goHome')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Screen 10: Disconnected / Reconnection Overlay
+        if (store.uiState.isDisconnected) {
+          html += `
+            <div class="fixed inset-0 z-50 bg-[#081E18]/92 backdrop-blur-md flex items-center justify-center p-4">
+              <div class="anim-modal w-full max-w-md rounded-3xl bg-[#11392F] border border-[#D95C5C]/50 p-7 text-center shadow-2xl flex flex-col items-center gap-4">
+                <div class="relative w-16 h-16 flex items-center justify-center">
+                  <span style="animation: radarWave 1.5s ease-out infinite;" class="absolute inset-0 rounded-full border-2 border-[#D95C5C]"></span>
+                  <span style="animation: radarWave 1.5s 0.5s ease-out infinite;" class="absolute inset-0 rounded-full border-2 border-[#D95C5C]"></span>
+                  <div class="relative z-10 w-14 h-14 rounded-2xl bg-[#D95C5C]/15 border border-[#D95C5C]/45 flex items-center justify-center">
+                    <i data-lucide="radio" class="w-7 h-7 text-[#D95C5C]"></i>
+                  </div>
+                </div>
+                <div>
+                  <h3 class="text-xl font-extrabold text-white">${t('connLost')}</h3>
+                  <p class="text-xs sm:text-sm text-[#B7C9C1] mt-1.5 leading-relaxed">${t('connLostDesc')}</p>
+                </div>
+                ${store.publicState.room?.code ? `
+                  <div class="px-4 py-1.5 rounded-xl bg-[#0C2B23] border border-[#235547] text-xs font-mono text-[#D6B56D] tracking-widest">
+                    ${t('roomCode')}: ${esc(store.publicState.room.code)}
+                  </div>
+                ` : ''}
+                <button type="button" data-action="reconnect-now" ${store.uiState.reconnecting ? 'disabled' : ''}
+                  class="btn-gold w-full py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                  <i data-lucide="refresh-cw" class="w-4 h-4 ${store.uiState.reconnecting ? 'animate-spin' : ''}"></i>
+                  <span>${store.uiState.reconnecting ? t('reconnecting') : t('reconnectBtn')}</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        root.innerHTML = html;
+        lucide.createIcons();
+      }
+
+      // MASTER RENDERER
+      function renderApp() {
+        const sil = document.getElementById('ambient-silhouettes');
+        if (sil) {
+          sil.style.display = (store.uiState.screen === 'TABLE_BOARD' || store.uiState.screen === 'PLAYER_SCREEN') ? 'none' : 'block';
+        }
+
+        renderTopBar();
+
+        const main = document.getElementById('app-main');
+        if (!main) return;
+
+        let html = '';
+        switch (store.uiState.screen) {
+          case 'LANDING': html = renderLandingScreen(); break;
+          case 'CREATE_ROOM': html = renderCreateRoomScreen(); break;
+          case 'JOIN_ROOM': html = renderJoinRoomScreen(); break;
+          case 'WAITING_ROOM': html = renderWaitingRoomScreen(); break;
+          case 'TABLE_BOARD': html = renderTabletBoardScreen(); break;
+          case 'PLAYER_SCREEN': html = renderPlayerGameScreen(); break;
+          case 'ROUND_RESULTS': html = renderRoundResultsScreen(); break;
+          case 'MATCH_RESULTS': html = renderMatchResultsScreen(); break;
+          default: html = renderLandingScreen();
+        }
+        main.innerHTML = html;
+
+        // Bind Inline Join Form (Landing Tab 2) or Dedicated Join Form
+        const bindForm = (formId, codeId, nameId) => {
+          const form = document.getElementById(formId);
+          if (!form) return;
+          const ci = document.getElementById(codeId);
+          const ni = document.getElementById(nameId);
+          ci.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+            store.uiState.joinDraft.code = e.target.value;
+          });
+          ni.addEventListener('input', (e) => {
+            store.uiState.joinDraft.name = e.target.value;
+          });
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await submitJoinRoom();
+          });
+        };
+        bindForm('inline-join-form', 'inline-code', 'inline-name');
+        bindForm('dedicated-join-form', 'ded-code', 'ded-name');
+
+        renderModals();
+        lucide.createIcons();
+      }
+
+      // ======================================================================
+      // 11. ASYNC ACTIONS & EVENT DELEGATION
+      // ======================================================================
+      async function submitCreateRoom() {
+        if (store.uiState.loading) return;
+        store.uiState.loading = true;
+        renderApp();
+        try {
+          const d = store.uiState.createDraft;
+          const { room, hostToken } = await roomService.createRoom(d.maxPlayers, d.targetScore, d.tieRule);
+          store.publicState.room = room;
+          store.publicState.players = [];
+          store.uiState.hostToken = hostToken;
+          store.uiState.role = 'TABLE';
+          store.privateState.activePlayerId = null;
+          store.uiState.localPlayers = {};
+          wipePrivateState();
+          store.uiState.screen = 'WAITING_ROOM';
+          audioEngine.turnChime();
+          haptics.tap();
+          saveSession();
+          await syncLiveState({ navigate: true });
+        } catch (err) {
+          audioEngine.error();
+          haptics.error();
+          showToast(friendlyError(err), 'danger');
+        } finally {
+          store.uiState.loading = false;
+          renderApp();
+        }
+      }
+
+      async function submitJoinRoom() {
+        if (store.uiState.loading) return;
+        store.uiState.joinDraft.error = '';
+        store.uiState.loading = true;
+        renderApp();
+        try {
+          const { room, player, playerToken } = await playerService.joinRoom(
+            store.uiState.joinDraft.code,
+            store.uiState.joinDraft.name,
+            false
+          );
+          store.publicState.room = room;
+          store.uiState.role = 'PLAYER';
+          store.privateState.activePlayerId = player.id;
+          store.uiState.localPlayers[player.id] = {
+            id: player.id,
+            name: player.name,
+            seatIndex: player.seatIndex,
+            token: playerToken,
+            isBot: false,
+          };
+          audioEngine.turnChime();
+          haptics.tap();
+          store.uiState.screen = screenForCurrentRoom();
+          saveSession();
+          await syncLiveState({ navigate: true });
+        } catch (err) {
+          audioEngine.error();
+          haptics.error();
+          store.uiState.joinDraft.error = friendlyError(err);
+        } finally {
+          store.uiState.loading = false;
+          renderApp();
+        }
+      }
+
+      async function addPlayerIntoRoom(isBot) {
+        const room = store.publicState.room;
+        if (!room || store.uiState.actionBusy) return;
+        store.uiState.actionBusy = true;
+        renderApp();
+        try {
+          const pool = isBot ? BOT_NAMES[store.uiState.lang] : TEST_HUMAN_NAMES[store.uiState.lang];
+          const used = new Set(store.publicState.players.map((p) => p.name));
+          const nextName = pool.find((n) => !used.has(n)) || (isBot ? `Bot ${store.publicState.players.length + 1}` : `Player ${store.publicState.players.length + 1}`);
+          const { player, playerToken } = await playerService.joinRoom(room.code, nextName, isBot);
+          store.uiState.localPlayers[player.id] = {
+            id: player.id,
+            name: player.name,
+            seatIndex: player.seatIndex,
+            token: playerToken,
+            isBot,
+          };
+          audioEngine.tap();
+          haptics.tap();
+          saveSession();
+          await syncLiveState({ navigate: false });
+        } catch (err) {
+          audioEngine.error();
+          showToast(friendlyError(err), 'danger');
+        } finally {
+          store.uiState.actionBusy = false;
+          renderApp();
+        }
+      }
+
+      async function updateRoomSettingsLive(patch) {
+        const room = store.publicState.room;
+        if (!room || !store.uiState.hostToken) return;
+        store.uiState.actionBusy = true;
+        try {
+          await roomService.updateSettings(room.code, store.uiState.hostToken, {
+            maxPlayers: patch.maxPlayers ?? room.maxPlayers,
+            targetScore: patch.targetScore ?? room.targetScore,
+            tieRule: patch.tieRule ?? room.tieRule,
+          });
+          audioEngine.tap();
+          showToast(t('settingsSaved'), 'gold');
+          await syncLiveState({ navigate: false });
+        } catch (err) {
+          audioEngine.error();
+          showToast(friendlyError(err), 'danger');
+        } finally {
+          store.uiState.actionBusy = false;
+          renderApp();
+        }
+      }
+
+      async function performReconnect() {
+        store.uiState.reconnecting = true;
+        renderModals();
+        try {
+          const room = store.publicState.room;
+          const pid = store.privateState.activePlayerId;
+          if (room && pid && store.uiState.localPlayers[pid]?.token) {
+            await playerService.setConnection(room.code, pid, store.uiState.localPlayers[pid].token, true);
+          }
+          realtimeService.unsubscribe();
+          await syncLiveState({ navigate: true });
+          store.uiState.isDisconnected = false;
+          audioEngine.turnChime();
+          haptics.tap();
+        } catch (err) {
+          audioEngine.error();
+          showToast(friendlyError(err), 'danger');
+        } finally {
+          store.uiState.reconnecting = false;
+          renderApp();
+        }
+      }
+
+      document.addEventListener('click', async (e) => {
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+        const action = el.getAttribute('data-action');
+
+        switch (action) {
+          case 'brand-home': {
+            audioEngine.tap();
+            haptics.tap();
+            if (store.publicState.room && !['LANDING', 'CREATE_ROOM', 'JOIN_ROOM'].includes(store.uiState.screen)) {
+              store.uiState.confirmHomeOpen = true;
+              renderModals();
+            } else {
+              store.uiState.screen = 'LANDING';
+              renderApp();
+            }
+            break;
+          }
+
+          case 'go-landing':
+          case 'confirm-home': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.confirmHomeOpen = false;
+            store.uiState.screen = 'LANDING';
+            renderApp();
+            break;
+          }
+
+          case 'set-landing-tab': {
+            const tab = el.getAttribute('data-tab');
+            if (tab !== store.uiState.landingTab) {
+              audioEngine.tap();
+              haptics.tap();
+              store.uiState.landingTab = tab;
+              store.uiState.joinDraft.error = '';
+              renderApp();
+            }
+            break;
+          }
+
+          case 'resume-saved': {
+            audioEngine.tap();
+            haptics.tap();
+            const saved = loadSession();
+            if (saved?.roomCode) {
+              store.uiState.hostToken = saved.hostToken || null;
+              store.uiState.role = saved.role || 'TABLE';
+              store.privateState.activePlayerId = saved.activePlayerId || null;
+              store.uiState.localPlayers = saved.localPlayers || {};
+              store.uiState.screen = 'WAITING_ROOM';
+              await syncLiveState({ navigate: true });
+            }
+            break;
+          }
+
+          case 'go-create': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.screen = 'CREATE_ROOM';
+            renderApp();
+            break;
+          }
+
+          case 'open-settings': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.simOpen = false;
+            store.uiState.settingsOpen = true;
+            renderApp();
+            break;
+          }
+
+          case 'open-sim': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.settingsOpen = false;
+            store.uiState.simOpen = true;
+            renderApp();
+            break;
+          }
+
+          case 'close-modals': {
+            audioEngine.tap();
+            store.uiState.settingsOpen = false;
+            store.uiState.simOpen = false;
+            store.uiState.confirmHomeOpen = false;
+            renderApp();
+            break;
+          }
+
+          case 'open-confirm-home': {
+            audioEngine.tap();
+            store.uiState.confirmHomeOpen = true;
+            renderModals();
+            break;
+          }
+
+          case 'toggle-lang': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.lang = store.uiState.lang === 'ar' ? 'en' : 'ar';
+            applyDir();
+            savePrefs();
+            renderApp();
+            break;
+          }
+
+          case 'toggle-sound': {
+            store.uiState.soundEnabled = !store.uiState.soundEnabled;
+            audioEngine.enabled = store.uiState.soundEnabled;
+            if (store.uiState.soundEnabled) audioEngine.tap();
+            savePrefs();
+            renderModals();
+            break;
+          }
+
+          case 'toggle-haptics': {
+            store.uiState.hapticsEnabled = !store.uiState.hapticsEnabled;
+            haptics.enabled = store.uiState.hapticsEnabled;
+            if (store.uiState.hapticsEnabled) haptics.tap();
+            audioEngine.tap();
+            savePrefs();
+            renderModals();
+            break;
+          }
+
+          case 'toggle-autobot': {
+            audioEngine.tap();
+            store.uiState.autoBot = !store.uiState.autoBot;
+            savePrefs();
+            renderModals();
+            scheduleAutoBot();
+            break;
+          }
+
+          case 'draft-players': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.createDraft.maxPlayers = Number(el.getAttribute('data-val'));
+            renderApp();
+            break;
+          }
+
+          case 'draft-target': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.createDraft.targetScore = Number(el.getAttribute('data-val'));
+            renderApp();
+            break;
+          }
+
+          case 'draft-tie': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.createDraft.tieRule = el.getAttribute('data-val');
+            renderApp();
+            break;
+          }
+
+          case 'submit-create': {
+            await submitCreateRoom();
+            break;
+          }
+
+          case 'set-target-live': {
+            const v = Number(el.getAttribute('data-val'));
+            store.uiState.createDraft.targetScore = v;
+            if (store.publicState.room && store.uiState.hostToken) await updateRoomSettingsLive({ targetScore: v });
+            else { audioEngine.tap(); renderModals(); }
+            break;
+          }
+
+          case 'set-tie-live': {
+            const v = el.getAttribute('data-val');
+            store.uiState.createDraft.tieRule = v;
+            if (store.publicState.room && store.uiState.hostToken) await updateRoomSettingsLive({ tieRule: v });
+            else { audioEngine.tap(); renderModals(); }
+            break;
+          }
+
+          case 'host-set-players': {
+            await updateRoomSettingsLive({ maxPlayers: Number(el.getAttribute('data-val')) });
+            break;
+          }
+
+          case 'copy-code': {
+            if (!store.publicState.room) break;
+            audioEngine.tap();
+            haptics.tap();
+            copyText(store.publicState.room.code);
+            showToast(t('copied'), 'gold');
+            break;
+          }
+
+          case 'copy-link': {
+            if (!store.publicState.room) break;
+            audioEngine.tap();
+            haptics.tap();
+            copyText(getInviteUrl(store.publicState.room.code));
+            showToast(t('copied'), 'gold');
+            break;
+          }
+
+          case 'add-bot': {
+            await addPlayerIntoRoom(true);
+            break;
+          }
+
+          case 'add-local-human': {
+            await addPlayerIntoRoom(false);
+            break;
+          }
+
+          case 'toggle-ready': {
+            const room = store.publicState.room;
+            const pid = store.privateState.activePlayerId;
+            const rec = pid && store.uiState.localPlayers[pid];
+            if (!room || !rec?.token || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              await playerService.toggleReady(room.code, pid, rec.token);
+              audioEngine.tap();
+              haptics.tap();
+              await syncLiveState({ navigate: false });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'start-match': {
+            const room = store.publicState.room;
+            if (!room || !store.uiState.hostToken || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              await gameService.startGame(room.code, store.uiState.hostToken);
+              haptics.tap();
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'bot-step': {
+            const room = store.publicState.room;
+            if (!room || !store.uiState.hostToken || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              await gameService.playBotTurn(room.code, store.uiState.hostToken);
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'select-tile': {
+            const ps = store.privateState;
+            if (!ps.isMyTurn) break;
+            const tid = el.getAttribute('data-tile-id');
+            if (!ps.validMoves[tid]) {
+              audioEngine.error();
+              haptics.error();
+              showToast(t('invalidTile'), 'danger');
+              break;
+            }
+            audioEngine.tap();
+            haptics.tap();
+            if (ps.selectedTileId === tid) {
+              ps.selectedTileId = null;
+              ps.selectedEnd = null;
+            } else {
+              ps.selectedTileId = tid;
+              const mv = ps.validMoves[tid];
+              const room = store.publicState.room;
+              if (!room.board.length) ps.selectedEnd = 'right';
+              else if (mv.canLeft && !mv.canRight) ps.selectedEnd = 'left';
+              else if (mv.canRight && !mv.canLeft) ps.selectedEnd = 'right';
+              else if (room.leftEnd === room.rightEnd) ps.selectedEnd = 'right';
+              else ps.selectedEnd = null;
+            }
+            renderApp();
+            break;
+          }
+
+          case 'pick-end': {
+            const end = el.getAttribute('data-end');
+            if (!store.privateState.selectedTileId || !store.privateState.validMoves[store.privateState.selectedTileId]) break;
+            audioEngine.tap();
+            haptics.tap();
+            store.privateState.selectedEnd = end;
+            renderApp();
+            break;
+          }
+
+          case 'play-selected': {
+            const room = store.publicState.room;
+            const ps = store.privateState;
+            const rec = ps.activePlayerId && store.uiState.localPlayers[ps.activePlayerId];
+            if (!room || !rec?.token || !ps.selectedTileId || store.uiState.actionBusy) break;
+            const end = el.getAttribute('data-end') || ps.selectedEnd || 'right';
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              const payload = await gameService.playTile(room.code, ps.activePlayerId, rec.token, ps.selectedTileId, end);
+              audioEngine.clack();
+              haptics.clack();
+              ps.selectedTileId = null;
+              ps.selectedEnd = null;
+              if (payload && payload.tiles) applyPrivateHandPayload(payload);
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              haptics.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'draw-tile': {
+            const room = store.publicState.room;
+            const ps = store.privateState;
+            const rec = ps.activePlayerId && store.uiState.localPlayers[ps.activePlayerId];
+            if (!room || !rec?.token || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              const payload = await gameService.drawTile(room.code, ps.activePlayerId, rec.token);
+              audioEngine.drawSwoosh();
+              haptics.tap();
+              if (payload && payload.tiles) applyPrivateHandPayload(payload);
+              if (payload && payload.autoPassed) showToast(t('autoPassedMsg'), 'info');
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'pass-turn': {
+            const room = store.publicState.room;
+            const ps = store.privateState;
+            const rec = ps.activePlayerId && store.uiState.localPlayers[ps.activePlayerId];
+            if (!room || !rec?.token || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              const payload = await gameService.passTurn(room.code, ps.activePlayerId, rec.token);
+              audioEngine.tap();
+              haptics.tap();
+              if (payload && payload.tiles) applyPrivateHandPayload(payload);
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'next-round': {
+            const room = store.publicState.room;
+            if (!room || !store.uiState.hostToken || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              await gameService.startNextRound(room.code, store.uiState.hostToken);
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'rematch': {
+            const room = store.publicState.room;
+            if (!room || !store.uiState.hostToken || store.uiState.actionBusy) break;
+            store.uiState.actionBusy = true;
+            renderApp();
+            try {
+              await gameService.rematch(room.code, store.uiState.hostToken);
+              await syncLiveState({ navigate: true });
+            } catch (err) {
+              audioEngine.error();
+              showToast(friendlyError(err), 'danger');
+            } finally {
+              store.uiState.actionBusy = false;
+              renderApp();
+            }
+            break;
+          }
+
+          case 'sim-tablet': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.role = 'TABLE';
+            wipePrivateState(); // STRICT PRIVACY: wipe private tiles when switching to Tablet
+            store.uiState.simOpen = false;
+            store.uiState.screen = screenForCurrentRoom();
+            saveSession();
+            renderApp();
+            scheduleAutoBot();
+            break;
+          }
+
+          case 'sim-player': {
+            const pid = el.getAttribute('data-pid');
+            if (!pid || !store.uiState.localPlayers[pid]?.token) break;
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.role = 'PLAYER';
+            store.privateState.activePlayerId = pid;
+            store.privateState.selectedTileId = null;
+            store.privateState.selectedEnd = null;
+            store.uiState.simOpen = false;
+            store.uiState.screen = screenForCurrentRoom();
+            saveSession();
+            await syncLiveState({ navigate: true });
+            break;
+          }
+
+          case 'sim-disconnect': {
+            audioEngine.tap();
+            store.uiState.simOpen = false;
+            const next = !store.uiState.isDisconnected;
+            store.uiState.isDisconnected = next;
+            const room = store.publicState.room;
+            const pid = store.privateState.activePlayerId;
+            if (room && pid && store.uiState.localPlayers[pid]?.token) {
+              playerService.setConnection(room.code, pid, store.uiState.localPlayers[pid].token, !next).catch(() => {});
+            }
+            renderApp();
+            break;
+          }
+
+          case 'reconnect-now': {
+            await performReconnect();
+            break;
+          }
+
+          case 'leave-now': {
+            audioEngine.tap();
+            haptics.tap();
+            store.uiState.simOpen = false;
+            store.uiState.confirmHomeOpen = false;
+            clearSession();
+            store.uiState.screen = 'LANDING';
+            renderApp();
+            break;
+          }
+        }
+      });
+
+      // Browser network status listeners
+      window.addEventListener('offline', () => {
+        if (store.publicState.room) {
+          store.uiState.isDisconnected = true;
+          renderModals();
+        }
+      });
+      window.addEventListener('online', () => {
+        if (store.publicState.room && store.uiState.isDisconnected) {
+          performReconnect();
+        }
+      });
+
+      // ======================================================================
+      // 12. BOOTSTRAP & SPLASH DISMISSAL
+      // ======================================================================
+      async function boot() {
+        loadPrefs();
+
+        // 1.1s Splash Screen (tap to skip)
+        const splash = document.getElementById('splash-screen');
+        const dismissSplash = () => {
+          if (!splash || splash.dataset.done) return;
+          splash.dataset.done = '1';
+          splash.style.opacity = '0';
+          splash.style.pointerEvents = 'none';
+          setTimeout(() => splash.remove(), 320);
+        };
+        if (splash) {
+          document.getElementById('splash-title').textContent = t('brand');
+          document.getElementById('splash-sub').textContent = t('eyebrow');
+          splash.addEventListener('click', dismissSplash);
+          setTimeout(dismissSplash, 1100);
+        }
+
+        const saved = loadSession();
+        store.uiState.savedSession = saved;
+
+        // Handle ?join=ROOMCODE from QR scans on real smartphones
+        const params = new URLSearchParams(window.location.search);
+        const joinParam = params.get('join');
+        if (joinParam && joinParam.trim().length > 0) {
+          store.uiState.joinDraft.code = joinParam.trim().toUpperCase().slice(0, 6);
+          store.uiState.landingTab = 'PLAYER';
+          store.uiState.screen = 'JOIN_ROOM';
+          renderApp();
+          return;
+        }
+
+        // Auto-reconnect if saved session exists
+        if (saved?.roomCode) {
+          store.uiState.hostToken = saved.hostToken || null;
+          store.uiState.role = saved.role || 'TABLE';
+          store.privateState.activePlayerId = saved.activePlayerId || null;
+          store.uiState.localPlayers = saved.localPlayers || {};
+          renderApp();
+          await syncLiveState({ navigate: true });
+          return;
+        }
+
+        renderApp();
+      }
+
+      window.addEventListener('DOMContentLoaded', boot);
+    })();
+  </script>
+</body>
+</html>
