@@ -8,6 +8,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="دومنا النني" />
+  <link rel="manifest" href="./manifest.json" />
+  <link id="pwa-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%230F352B'/%3E%3Crect x='34' y='16' width='60' height='96' rx='14' fill='%23F5F0E5' stroke='%23D6B56D' stroke-width='5'/%3E%3Cline x1='44' y1='64' x2='84' y2='64' stroke='%23D6B56D' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='64' cy='40' r='7' fill='%2320231F'/%3E%3Ccircle cx='51' cy='79' r='6' fill='%2320231F'/%3E%3Ccircle cx='77' cy='79' r='6' fill='%2320231F'/%3E%3Ccircle cx='51' cy='97' r='6' fill='%2320231F'/%3E%3Ccircle cx='77' cy='97' r='6' fill='%2320231F'/%3E%3C/svg%3E" />
+  <link id="pwa-apple-icon" rel="apple-touch-icon" href="" />
   <title>دومنا النني | Domino El-Neny</title>
 
   <!-- Tailwind CSS CDN -->
@@ -265,7 +268,6 @@
       flex-shrink: 0;
     }
 
-    /* Snug flush-edge board tiles for zero-gap connected snake chain */
     .domino-tile.board-tile {
       border-radius: 6px;
       padding: 2px;
@@ -426,14 +428,14 @@
   <div id="modal-root"></div>
 
   <!-- ========================================================================
-       MODULAR APPLICATION SCRIPT (LIVE SUPABASE + REALTIME + AUDIO + HAPTICS)
+       MODULAR APPLICATION SCRIPT (LIVE SUPABASE + REALTIME + AUDIO + PWA)
        ======================================================================== -->
   <script>
     (function () {
       'use strict';
 
       // ======================================================================
-      // 1. LIVE SUPABASE CONNECTION
+      // 1. LIVE SUPABASE CONNECTION & PWA INSTALL STATE
       // ======================================================================
       const SUPABASE_URL = 'https://bpmqdjcmajmccidervmz.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwbXFkamNtYWptY2NpZGVydm16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNzcyMzcsImV4cCI6MjExMDg1MzIzN30.ylbo6QsStGtBhhzFUCpkW5cAWj1pKzxvYdmOkYckCR8';
@@ -441,6 +443,81 @@
 
       const STORAGE_SESSION = 'domino_elneny_session_v2';
       const STORAGE_PREFS = 'domino_elneny_prefs_v2';
+
+      let deferredInstallPrompt = null;
+
+      function isIosDevice() {
+        return /iphone|ipad|ipod/i.test(window.navigator.userAgent || '') ||
+          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      }
+
+      function checkIsStandalone() {
+        return Boolean(
+          window.matchMedia('(display-mode: standalone)').matches ||
+          window.navigator.standalone === true
+        );
+      }
+
+      // Generate a crisp 512x512 PNG Apple Touch Icon for iOS Home Screen
+      function generateAppleTouchIcon() {
+        try {
+          const c = document.createElement('canvas');
+          c.width = 512;
+          c.height = 512;
+          const ctx = c.getContext('2d');
+
+          // Emerald background
+          ctx.fillStyle = '#0F352B';
+          ctx.fillRect(0, 0, 512, 512);
+
+          // Subtle gold radial glow
+          const grad = ctx.createRadialGradient(256, 256, 30, 256, 256, 240);
+          grad.addColorStop(0, 'rgba(214,181,109,0.28)');
+          grad.addColorStop(1, 'rgba(15,53,43,0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 512, 512);
+
+          // Ivory Domino Card
+          const x = 148, y = 74, w = 216, h = 364, r = 42;
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + w, y, x + w, y + h, r);
+          ctx.arcTo(x + w, y + h, x, y + h, r);
+          ctx.arcTo(x, y + h, x, y, r);
+          ctx.arcTo(x, y, x + w, y, r);
+          ctx.closePath();
+          ctx.fillStyle = '#F5F0E5';
+          ctx.fill();
+          ctx.lineWidth = 14;
+          ctx.strokeStyle = '#D6B56D';
+          ctx.stroke();
+
+          // Divider
+          ctx.beginPath();
+          ctx.moveTo(186, 256);
+          ctx.lineTo(326, 256);
+          ctx.lineWidth = 10;
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = '#D6B56D';
+          ctx.stroke();
+
+          // Pips (1 top, 4 bottom)
+          const dot = (dx, dy, rad) => {
+            ctx.beginPath();
+            ctx.arc(dx, dy, rad, 0, Math.PI * 2);
+            ctx.fillStyle = '#20231F';
+            ctx.fill();
+          };
+          dot(256, 166, 24);
+          dot(208, 314, 21);
+          dot(304, 314, 21);
+          dot(208, 382, 21);
+          dot(304, 382, 21);
+
+          const iconLink = document.getElementById('pwa-apple-icon');
+          if (iconLink) iconLink.href = c.toDataURL('image/png');
+        } catch (e) {}
+      }
 
       // ======================================================================
       // 2. BILINGUAL DICTIONARY (EGYPTIAN COLLOQUIAL ARABIC DEFAULT & ENGLISH)
@@ -589,6 +666,17 @@
           errStarted: 'الجيم بدأ خلاص في الأوضة دي.',
           errGeneral: 'حصلت مشكلة في الاتصال، جرّب تاني.',
           autoPassedMsg: 'الورقة اللي سحبتها مش نافعة — الدور اتعدّى لوحده',
+          installShort: 'ثبّت',
+          installBtn: 'ثبّت اللعبة على الشاشة الرئيسية',
+          installTitle: 'ثبّت دومنا النني على جهازك',
+          installDesc: 'افتح اللعبة بضغطة واحدة من الشاشة الرئيسية زي أي تطبيق وبشاشة كاملة.',
+          installNow: 'ثبّت دلوقتي',
+          installedDone: 'اللعبة اتثبتت على جهازك يا معلم!',
+          installIosStep1: 'دوس على زرار المشاركة (Share) تحت في متصفح Safari.',
+          installIosStep2: 'انزل لتحت واختار "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).',
+          installIosStep3: 'دوس "إضافة" (Add) فوق وهتلاقي دومنا النني على شاشتك.',
+          installAndroidManual: 'دوس على الـ 3 نقط فوق في المتصفح (⋮) واختار "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".',
+          gotIt: 'تمام، فهمت',
         },
         en: {
           brand: 'Domino El-Neny',
@@ -733,6 +821,17 @@
           errStarted: 'Game already started in this room.',
           errGeneral: 'Server error, please try again.',
           autoPassedMsg: 'Drawn tile unplayable — turn passed automatically',
+          installShort: 'Install',
+          installBtn: 'Add to Home Screen',
+          installTitle: 'Install Domino El-Neny',
+          installDesc: 'Launch the game in one tap right from your home screen in full-screen app mode.',
+          installNow: 'Install Now',
+          installedDone: 'App installed on your device!',
+          installIosStep1: 'Tap the Share button at the bottom of Safari.',
+          installIosStep2: 'Scroll down and choose "Add to Home Screen".',
+          installIosStep3: 'Tap "Add" to place Domino El-Neny on your home screen.',
+          installAndroidManual: 'Tap the browser menu (⋮) and choose "Install app" or "Add to Home screen".',
+          gotIt: 'Got it',
         },
       };
 
@@ -898,7 +997,7 @@
       };
 
       // ======================================================================
-      // 4. STRICTLY SEPARATED STATE STORE (publicState / privateState / uiState)
+      // 4. STRICTLY SEPARATED STATE STORE
       // ======================================================================
       const store = {
         publicState: {
@@ -938,6 +1037,8 @@
           settingsOpen: false,
           simOpen: false,
           confirmHomeOpen: false,
+          installModalOpen: false,
+          isStandalone: checkIsStandalone(),
           isDisconnected: false,
           reconnecting: false,
           realtimeStatus: 'IDLE',
@@ -1581,7 +1682,6 @@
           store.publicState.lastBoardLen = room.board.length;
           store.publicState.lastStatus = room.status;
 
-          // Action sound & toast feedback
           const act = room.lastAction;
           const stamp = act ? (act.timestamp || act.at || JSON.stringify(act)) : null;
           if (act && stamp && prevStamp !== null && stamp !== prevStamp) {
@@ -1605,7 +1705,6 @@
           }
           store.publicState.lastActionStamp = stamp;
 
-          // Status transitions
           if (prevStatus !== room.status) {
             if (room.status === 'playing') {
               stopConfetti();
@@ -1629,7 +1728,6 @@
             startRoundTimer();
           }
 
-          // STRICT PRIVACY: Fetch private hand ONLY in PLAYER mode
           if (store.uiState.role === 'PLAYER' && store.privateState.activePlayerId) {
             const localRec = store.uiState.localPlayers[store.privateState.activePlayerId];
             if (localRec?.token && room.status === 'playing') {
@@ -1876,23 +1974,17 @@
         `;
       }
 
-      /**
-       * ZERO-GAP CONNECTED DOMINO SNAKE LAYOUT ENGINE
-       * Every tile sits physically flush against the previous tile (0px gap),
-       * including 90-degree vertical corner turns when reversing direction!
-       */
       function computeConnectedSnakeLayout(board) {
-        const UNIT = 34; // 1 domino half = 34px x 34px, full tile = 68px x 34px
+        const UNIT = 34;
         const ROW_MAX_X = window.innerWidth < 640 ? 9 : 13;
         const ROW_MIN_X = 0;
 
         const placed = [];
-        let dir = 'R'; // 'R' (left->right) or 'L' (right->left)
-        let cx = 0;    // Current horizontal attachment edge (in UNITs)
-        let cy = 0;    // Current row centerline Y (in UNITs)
+        let dir = 'R';
+        let cx = 0;
+        let cy = 0;
 
         const collidesEarlier = (rect, margin = 0.14) => {
-          // Ignore the immediately previous tile (which we intentionally touch!)
           for (let k = 0; k < placed.length - 1; k++) {
             const o = placed[k];
             if (
@@ -1912,44 +2004,33 @@
           const prev = placed.length > 0 ? placed[placed.length - 1] : null;
           let item = null;
 
-          // Check if we reached the edge and must turn DOWN via a flush vertical corner tile
           const needRightTurn = prev && dir === 'R' && cx >= ROW_MAX_X;
           const needLeftTurn = prev && dir === 'L' && cx <= ROW_MIN_X;
 
           if (needRightTurn) {
-            // Attach vertical tile directly under prev's rightmost half (100% flush)
             const x = cx - 1;
             const y = prev.y + prev.h;
             item = {
-              tile,
-              x,
-              y,
-              w: 1,
-              h: 2,
+              tile, x, y, w: 1, h: 2,
               orientation: 'vertical',
-              dispA: tile.left,  // Top half touches prev's exposed half
-              dispB: tile.right, // Bottom half exposes to the left row
+              dispA: tile.left,
+              dispB: tile.right,
             };
             dir = 'L';
-            cx = x;       // Next leftward tile attaches flush to left edge of bottom half
-            cy = y + 1.5; // Centerline of the bottom half
+            cx = x;
+            cy = y + 1.5;
           } else if (needLeftTurn) {
-            // Attach vertical tile directly under prev's leftmost half (100% flush)
             const x = cx;
             const y = prev.y + prev.h;
             item = {
-              tile,
-              x,
-              y,
-              w: 1,
-              h: 2,
+              tile, x, y, w: 1, h: 2,
               orientation: 'vertical',
-              dispA: tile.left,  // Top half touches prev's exposed half
-              dispB: tile.right, // Bottom half exposes to the right row
+              dispA: tile.left,
+              dispB: tile.right,
             };
             dir = 'R';
-            cx = x + 1;   // Next rightward tile attaches flush to right edge of bottom half
-            cy = y + 1.5; // Centerline of the bottom half
+            cx = x + 1;
+            cy = y + 1.5;
           } else if (dir === 'R') {
             let usePerpDouble = tile.isDouble;
             if (usePerpDouble) {
@@ -1959,11 +2040,7 @@
 
             if (usePerpDouble) {
               item = {
-                tile,
-                x: cx,
-                y: cy - 1,
-                w: 1,
-                h: 2,
+                tile, x: cx, y: cy - 1, w: 1, h: 2,
                 orientation: 'vertical',
                 dispA: tile.left,
                 dispB: tile.right,
@@ -1971,19 +2048,14 @@
               cx += 1;
             } else {
               item = {
-                tile,
-                x: cx,
-                y: cy - 0.5,
-                w: 2,
-                h: 1,
+                tile, x: cx, y: cy - 0.5, w: 2, h: 1,
                 orientation: 'horizontal',
-                dispA: tile.left,  // Left half touches prev
-                dispB: tile.right, // Right half exposed
+                dispA: tile.left,
+                dispB: tile.right,
               };
               cx += 2;
             }
           } else {
-            // dir === 'L'
             let usePerpDouble = tile.isDouble;
             if (usePerpDouble) {
               const cand = { x: cx - 1, y: cy - 1, w: 1, h: 2 };
@@ -1992,11 +2064,7 @@
 
             if (usePerpDouble) {
               item = {
-                tile,
-                x: cx - 1,
-                y: cy - 1,
-                w: 1,
-                h: 2,
+                tile, x: cx - 1, y: cy - 1, w: 1, h: 2,
                 orientation: 'vertical',
                 dispA: tile.left,
                 dispB: tile.right,
@@ -2004,14 +2072,10 @@
               cx -= 1;
             } else {
               item = {
-                tile,
-                x: cx - 2,
-                y: cy - 0.5,
-                w: 2,
-                h: 1,
+                tile, x: cx - 2, y: cy - 0.5, w: 2, h: 1,
                 orientation: 'horizontal',
-                dispA: tile.right, // Left half exposed going left
-                dispB: tile.left,  // Right half touches prev
+                dispA: tile.right,
+                dispB: tile.left,
               };
               cx -= 2;
             }
@@ -2132,22 +2196,31 @@
         if (!bar) return;
         const hasRoom = Boolean(store.publicState.room?.code);
         const liveOk = store.uiState.realtimeStatus === 'SUBSCRIBED' && !store.uiState.isDisconnected;
+        const showInstall = !store.uiState.isStandalone;
 
         bar.innerHTML = `
-          <button type="button" data-action="brand-home" class="flex items-center gap-2.5 active:scale-95 transition-transform">
-            <div class="w-7 h-7 rounded-lg bg-[#F5F0E5] shadow-[0_3px_8px_rgba(0,0,0,0.45),inset_0_-2px_0_rgba(160,145,115,0.45)] flex items-center justify-center border border-[#DDD5C4]">
+          <button type="button" data-action="brand-home" class="flex items-center gap-2 active:scale-95 transition-transform min-w-0">
+            <div class="w-7 h-7 rounded-lg bg-[#F5F0E5] shadow-[0_3px_8px_rgba(0,0,0,0.45),inset_0_-2px_0_rgba(160,145,115,0.45)] flex items-center justify-center border border-[#DDD5C4] shrink-0">
               <div class="w-1.5 h-1.5 rounded-full bg-[#20231F]"></div>
             </div>
-            <span class="font-extrabold text-[15px] sm:text-base text-white tracking-tight">${t('brand')}</span>
+            <span class="font-extrabold text-[15px] sm:text-base text-white tracking-tight truncate">${t('brand')}</span>
             ${hasRoom ? `
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#17463A] border border-[#2A6152] text-[10px] font-bold ${liveOk ? 'text-emerald-300' : 'text-[#D6B56D]'}">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#17463A] border border-[#2A6152] text-[10px] font-bold shrink-0 ${liveOk ? 'text-emerald-300' : 'text-[#D6B56D]'}">
                 <span class="w-1.5 h-1.5 rounded-full ${liveOk ? 'bg-emerald-400 animate-pulse' : 'bg-[#D6B56D]'}"></span>
                 <span class="font-mono">${esc(store.publicState.room.code)}</span>
               </span>
             ` : ''}
           </button>
 
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            ${showInstall ? `
+              <button type="button" data-action="trigger-install" title="${t('installBtn')}" aria-label="${t('installBtn')}"
+                class="inline-flex items-center gap-1 rounded-full bg-[#D6B56D]/18 hover:bg-[#D6B56D]/28 border border-[#D6B56D]/70 px-2.5 py-1.5 text-[11px] font-extrabold text-[#D6B56D] transition-colors active:scale-95">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>${t('installShort')}</span>
+              </button>
+            ` : ''}
+
             <button type="button" data-action="open-sim" title="${t('simTitle')}" aria-label="${t('simTitle')}"
               class="p-2 rounded-xl border transition-colors active:scale-95 ${
                 store.uiState.simOpen ? 'bg-[#1A4B3E] border-[#D6B56D] text-[#D6B56D]' : 'border-transparent hover:bg-[#17463A] text-[#B7C9C1] hover:text-white'
@@ -2163,7 +2236,7 @@
             </button>
 
             <button type="button" data-action="toggle-lang"
-              class="inline-flex items-center gap-1.5 rounded-full bg-[#17463A] hover:bg-[#1E5648] border border-[#275A4C] px-3 py-1.5 text-xs font-bold text-white transition-colors active:scale-95">
+              class="inline-flex items-center gap-1 rounded-full bg-[#17463A] hover:bg-[#1E5648] border border-[#275A4C] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-white transition-colors active:scale-95">
               <span>${t('langPill')}</span>
               <i data-lucide="globe" class="w-3.5 h-3.5 text-[#D6B56D]"></i>
             </button>
@@ -2378,7 +2451,7 @@
         `;
       }
 
-      // SCREEN 3: JOIN ROOM (QR Scan Deep Link)
+      // SCREEN 3: JOIN ROOM
       function renderJoinRoomScreen() {
         const backIcon = store.uiState.lang === 'ar' ? 'arrow-right' : 'arrow-left';
         const jd = store.uiState.joinDraft;
@@ -2849,7 +2922,7 @@
         `;
       }
 
-      // SCREEN 8: ROUND RESULTS (Supports Array & Object revealedHands + Team Blocked Summary)
+      // SCREEN 8: ROUND RESULTS
       function renderRoundResultsScreen() {
         const room = store.publicState.room;
         if (!room) return '';
@@ -3048,12 +3121,13 @@
         `;
       }
 
-      // BOTTOM SHEETS & OVERLAYS
+      // BOTTOM SHEETS & OVERLAYS (INCLUDING PWA ADD-TO-HOME-SCREEN SHEET)
       function renderModals() {
         const root = document.getElementById('modal-root');
         if (!root) return;
         let html = '';
 
+        // Settings Sheet
         if (store.uiState.settingsOpen) {
           const room = store.publicState.room;
           const canHostEdit = !room || Boolean(store.uiState.hostToken);
@@ -3076,6 +3150,17 @@
                 </div>
 
                 <div class="overflow-y-auto app-scroll flex-1 flex flex-col gap-3.5">
+                  ${!store.uiState.isStandalone ? `
+                    <button type="button" data-action="trigger-install"
+                      class="w-full py-3 px-4 rounded-2xl bg-[#1A4B3E] hover:bg-[#225C4D] border border-[#D6B56D]/70 text-white font-extrabold text-xs sm:text-sm flex items-center justify-between gap-2 active:scale-[0.98] transition-all">
+                      <span class="flex items-center gap-2.5">
+                        <i data-lucide="download" class="w-4 h-4 text-[#D6B56D]"></i>
+                        <span>${t('installBtn')}</span>
+                      </span>
+                      <i data-lucide="smartphone" class="w-4 h-4 text-[#D6B56D]"></i>
+                    </button>
+                  ` : ''}
+
                   ${[
                     { label: t('soundLabel'), val: store.uiState.soundEnabled, act: 'toggle-sound' },
                     { label: t('hapticsLabel'), val: store.uiState.hapticsEnabled, act: 'toggle-haptics' },
@@ -3136,6 +3221,76 @@
           `;
         }
 
+        // PWA Install Bottom Sheet (iOS Safari Guide + Android/Desktop Fallback)
+        if (store.uiState.installModalOpen) {
+          const ios = isIosDevice();
+          html += `
+            <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+              <div data-action="close-modals" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+              <div class="anim-sheet relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#11392F] border-t sm:border border-[#D6B56D]/60 p-5 sm:p-6 shadow-2xl flex flex-col gap-4">
+                <div class="w-10 h-1 rounded-full bg-[#2A6152] mx-auto sm:hidden -mt-1"></div>
+
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-[#F5F0E5] border-2 border-[#D6B56D] flex flex-col items-center justify-between p-1.5 shadow-md shrink-0">
+                      <div class="w-2 h-2 rounded-full bg-[#20231F] mt-0.5"></div>
+                      <div class="w-6 h-[1.5px] bg-[#D6B56D]"></div>
+                      <div class="flex gap-1 mb-0.5">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#20231F]"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#20231F]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 class="text-base sm:text-lg font-black text-white">${t('installTitle')}</h3>
+                      <p class="text-[11px] text-[#B7C9C1]">${t('brand')}</p>
+                    </div>
+                  </div>
+                  <button type="button" data-action="close-modals" class="p-1.5 rounded-xl bg-[#1A4B3E] border border-[#2A6152] text-[#B7C9C1] hover:text-white active:scale-95">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <p class="text-xs sm:text-sm text-[#B7C9C1] leading-relaxed">${t('installDesc')}</p>
+
+                ${ios ? `
+                  <div class="flex flex-col gap-2.5 bg-[#0C2B23] rounded-2xl p-3.5 border border-[#235547]">
+                    <div class="flex items-start gap-2.5 text-xs text-white">
+                      <span class="w-6 h-6 rounded-lg bg-[#1A4B3E] border border-[#D6B56D]/50 text-[#D6B56D] font-black flex items-center justify-center shrink-0">1</span>
+                      <div class="flex items-center gap-1.5 pt-0.5 leading-relaxed">
+                        <span>${t('installIosStep1')}</span>
+                        <i data-lucide="share" class="w-4 h-4 text-[#D6B56D] shrink-0"></i>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2.5 text-xs text-white">
+                      <span class="w-6 h-6 rounded-lg bg-[#1A4B3E] border border-[#D6B56D]/50 text-[#D6B56D] font-black flex items-center justify-center shrink-0">2</span>
+                      <div class="flex items-center gap-1.5 pt-0.5 leading-relaxed">
+                        <span>${t('installIosStep2')}</span>
+                        <i data-lucide="plus-square" class="w-4 h-4 text-[#D6B56D] shrink-0"></i>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2.5 text-xs text-white">
+                      <span class="w-6 h-6 rounded-lg bg-[#1A4B3E] border border-[#D6B56D]/50 text-[#D6B56D] font-black flex items-center justify-center shrink-0">3</span>
+                      <span class="pt-0.5 leading-relaxed">${t('installIosStep3')}</span>
+                    </div>
+                  </div>
+                ` : `
+                  <div class="bg-[#0C2B23] rounded-2xl p-4 border border-[#235547] flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-[#1A4B3E] border border-[#D6B56D]/40 flex items-center justify-center shrink-0">
+                      <i data-lucide="more-vertical" class="w-5 h-5 text-[#D6B56D]"></i>
+                    </div>
+                    <p class="text-xs text-white leading-relaxed">${t('installAndroidManual')}</p>
+                  </div>
+                `}
+
+                <button type="button" data-action="close-modals" class="btn-gold w-full py-3 rounded-xl text-sm">
+                  ${t('gotIt')}
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        // Simulator Sheet
         if (store.uiState.simOpen) {
           const room = store.publicState.room;
           const tp = getTurnPlayer();
@@ -3355,7 +3510,6 @@
         renderModals();
         lucide.createIcons();
 
-        // Scale the connected domino snake cleanly to fit the felt viewport
         if (store.uiState.screen === 'TABLE_BOARD') {
           requestAnimationFrame(fitBoardSnake);
         }
@@ -3364,6 +3518,35 @@
       // ======================================================================
       // 11. ASYNC ACTIONS & EVENT DELEGATION
       // ======================================================================
+      async function handleInstallClick() {
+        audioEngine.tap();
+        haptics.tap();
+        store.uiState.settingsOpen = false;
+        store.uiState.simOpen = false;
+
+        if (deferredInstallPrompt) {
+          try {
+            deferredInstallPrompt.prompt();
+            const choice = await deferredInstallPrompt.userChoice;
+            if (choice && choice.outcome === 'accepted') {
+              deferredInstallPrompt = null;
+              store.uiState.isStandalone = true;
+              audioEngine.winChord();
+              haptics.win();
+              showToast(t('installedDone'), 'gold');
+            }
+          } catch (err) {
+            store.uiState.installModalOpen = true;
+          }
+          renderApp();
+          return;
+        }
+
+        // iOS Safari or browsers without beforeinstallprompt -> show clean instructions sheet
+        store.uiState.installModalOpen = true;
+        renderApp();
+      }
+
       async function submitCreateRoom() {
         if (store.uiState.loading) return;
         store.uiState.loading = true;
@@ -3510,6 +3693,11 @@
         const action = el.getAttribute('data-action');
 
         switch (action) {
+          case 'trigger-install': {
+            await handleInstallClick();
+            break;
+          }
+
           case 'brand-home': {
             audioEngine.tap();
             haptics.tap();
@@ -3572,6 +3760,7 @@
             audioEngine.tap();
             haptics.tap();
             store.uiState.simOpen = false;
+            store.uiState.installModalOpen = false;
             store.uiState.settingsOpen = true;
             renderApp();
             break;
@@ -3581,6 +3770,7 @@
             audioEngine.tap();
             haptics.tap();
             store.uiState.settingsOpen = false;
+            store.uiState.installModalOpen = false;
             store.uiState.simOpen = true;
             renderApp();
             break;
@@ -3591,6 +3781,7 @@
             store.uiState.settingsOpen = false;
             store.uiState.simOpen = false;
             store.uiState.confirmHomeOpen = false;
+            store.uiState.installModalOpen = false;
             renderApp();
             break;
           }
@@ -3987,6 +4178,21 @@
         }
       });
 
+      // PWA Install Lifecycle Listeners
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        renderTopBar();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        store.uiState.isStandalone = true;
+        store.uiState.installModalOpen = false;
+        showToast(t('installedDone'), 'gold');
+        renderApp();
+      });
+
       window.addEventListener('resize', () => {
         if (store.uiState.screen === 'TABLE_BOARD') {
           renderApp();
@@ -4006,10 +4212,17 @@
       });
 
       // ======================================================================
-      // 12. BOOTSTRAP & SPLASH DISMISSAL
+      // 12. BOOTSTRAP, SERVICE WORKER & SPLASH DISMISSAL
       // ======================================================================
       async function boot() {
         loadPrefs();
+        generateAppleTouchIcon();
+        store.uiState.isStandalone = checkIsStandalone();
+
+        // Register Service Worker if hosted on HTTP/HTTPS
+        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
 
         const splash = document.getElementById('splash-screen');
         const dismissSplash = () => {
